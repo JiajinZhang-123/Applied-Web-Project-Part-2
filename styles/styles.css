@@ -22,7 +22,14 @@ h3 {
 
 
 
+/* =========================
+   顶部导航栏（全站共用）
+   sticky 让导航在滚动时固定在页面顶部
+   ========================= */
 header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
     background-color: #ffffff;
     border-bottom: 1px solid #e5e7eb;
 }
@@ -99,15 +106,23 @@ nav a:focus {
     font-size: 1.1rem;
 }
 
+/* =========================
+   页面横幅（Hero）共用样式
+   apply / jobs / about 三页使用同一套渐变与配色，
+   集中定义避免重复
+   ========================= */
+.heroApply,
+.jobs,
+.about-hero {
+    background: linear-gradient(135deg, #1f3158, #405fc2);
+    color: white;
+}
+
 .heroApply {
     min-height: 270px;
 
     display: flex;
     align-items: center;
-
-    background: linear-gradient(135deg, #1f3158, #405fc2);
-
-    color: white;
 }
 
 .eyebrow {
@@ -272,21 +287,28 @@ footer {
    JOBS HERO SECTION
    ========================= */
 
-.jobs {
+.jobs,
+.about-hero {
     margin: 0;
     padding: 90px 15%;
-    background: linear-gradient(135deg, #1f3158, #405fc2);
-    color: white;
 }
 
-.jobs h1 {
+.about-hero {
+    max-width: none;
+    text-align: left;
+}
+
+/* jobs 与 about 的横幅标题、段落样式一致，合并定义 */
+.jobs h1,
+.about-hero h1 {
     font-size: 2.5rem;
     color: white;
     margin-top: 0;
     margin-bottom: 20px;
 }
 
-.jobs>p {
+.jobs>p,
+.about-hero p {
     font-size: 1.1rem;
     line-height: 1.6;
     color: white;
@@ -392,11 +414,13 @@ footer {
 
 @media screen and (max-width: 768px) {
 
-    .jobs {
+    .jobs,
+    .about-hero {
         padding: 50px 20px;
     }
 
-    .jobs h1 {
+    .jobs h1,
+    .about-hero h1 {
         font-size: 1.8rem;
     }
 
@@ -414,6 +438,25 @@ footer {
         position: static;
         width: auto;
         margin: 20px 0;
+    }
+
+    /* apply 页横幅与表单在窄屏下的调整 */
+    .heroApply {
+        min-height: 220px;
+    }
+
+    .heroContentApply {
+        padding: 40px 20px;
+        text-align: center;
+    }
+
+    .heroContentApply h1 {
+        font-size: 1.8rem;
+    }
+
+    fieldset {
+        min-width: 0;
+        padding: 15px 10px;
     }
 }
 
@@ -452,6 +495,18 @@ footer {
        font-size: 0.875rem;
     }
 
+    /* 必填字段标签后的红色星号 */
+    .required {
+        color: red;
+    }
+
+    /* 技能复选框：改成两列网格，避免 8 个选项挤在一条 flex 行里 */
+    .skillList .nameInputs {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+    }
+
     .Submission {
         display: flex;
         justify-content: center;
@@ -478,49 +533,12 @@ footer {
         color:#b3b1b1
     }
 
-    @media screen and (max-width: 768px) {
-        .heroApply {
-            min-height: 220px;
-        }
-        .heroContentApply {
-            padding: 40px 20px;
-            text-align: center;
-        }
-        .heroContentApply h1 {
-            font-size: 1.8rem;
-        }
-        fieldset {
-            min-width: 0;
-            padding: 15px 10px;
-        }
-    }
-
 /* =========================
    ABOUT PAGE
    ========================= */
 
-.about-hero {
-    max-width: none;
-    margin: 0;
-    padding: 90px 15%;
-    text-align: left;
-    background: linear-gradient(135deg, #1f3158, #405fc2);
-    color: white;
-}
-
-.about-hero h1 {
-    font-size: 2.5rem;
-    color: white;
-    margin-top: 0;
-    margin-bottom: 20px;
-}
-
-.about-hero p {
-    font-size: 1.1rem;
-    line-height: 1.6;
-    color: white;
-    margin-bottom: 0;
-}
+/* .about-hero 的横幅背景、标题与段落样式已与 .jobs 合并，
+   见「JOBS HERO SECTION」区块，避免重复定义 */
 
 .about-section {
     max-width: 1000px;
@@ -621,4 +639,11 @@ footer {
 
 .fun-facts tbody tr:hover {
     background-color: #e0e7ff;
+}
+
+@media (max-width: 500px) {
+    /* 手机屏幕上技能选项改回单列 */
+    .skillList .nameInputs {
+        grid-template-columns: 1fr;
+    }
 }
