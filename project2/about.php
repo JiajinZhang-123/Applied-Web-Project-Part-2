@@ -5,7 +5,7 @@ require_once 'settings.php';
 // connect databse
 $dbconn = mysqli_connect($host, $user, $pwd, $sql_db);
 if (!$dbconn) {
-    echo '<p>Unable to connect to the database.</p>';
+    die('<p>Unable to connect to the database.</p>');
 }
 
 mysqli_set_charset($dbconn, 'utf8mb4');
