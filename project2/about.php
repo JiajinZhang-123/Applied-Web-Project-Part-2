@@ -8,6 +8,8 @@ if (!$dbconn) {
     echo '<p>Unable to connect to the database.</p>';
 }
 
+mysqli_set_charset($dbconn, 'utf8mb4');
+
 $pageTitle = 'Finova Technologies | About the Team';
 $mainLabel = 'About the team';
 include 'header.inc';

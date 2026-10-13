@@ -14,6 +14,8 @@ if (!$dbconn) {
     die('<p>Unable to connect to the database.</p>');
 }
 
+mysqli_set_charset($dbconn, 'utf8mb4');
+
 $username = mysqli_real_escape_string($dbconn, trim($_POST['username']));
 
 $query = "SELECT user_id, password_hash FROM users WHERE username = ?";
