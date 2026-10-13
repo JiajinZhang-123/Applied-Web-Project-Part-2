@@ -647,3 +647,52 @@ footer {
         grid-template-columns: 1fr;
     }
 }
+
+/* ---- login ---- */
+.login-section {
+    max-width: 480px;
+    margin: 3rem auto;
+    padding: 2rem;
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+}
+
+.login-section h1 {
+    color: #1e40af;
+    margin-bottom: 0.5rem;
+}
+
+.login-form .nameInputs {
+    margin-bottom: 1rem;
+}
+
+.login-form label {
+    display: block;
+    margin-bottom: 0.3rem;
+    font-weight: bold;
+}
+
+.login-form input {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.login-form .apply-btn {
+    width: 100%;
+    padding: 0.6rem;
+    border: none;
+    cursor: pointer;
+}
+
+.error-message {
+    color: #b91c1c;
+    background-color: #fee2e2;
+    border: 1px solid #fecaca;
+    padding: 0.6rem;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+}
