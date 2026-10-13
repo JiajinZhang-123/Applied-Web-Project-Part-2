@@ -2,6 +2,6 @@
 // settings.php 
 $host = "localhost";          
 $user = "root";               
-$pwd = "";                   
+$pwd = "";      // Default is empty             
 $sql_db = "finova_project2"; 
 ?>
