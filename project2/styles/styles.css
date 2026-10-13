@@ -720,3 +720,43 @@ footer {
 .inclusion {
     margin-top: 2rem;
 }
+
+
+/* HR application list; horizontal scrolling keeps all columns available. */
+.management-section {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.management-table-wrapper {
+    overflow-x: auto;
+}
+
+.management-table-wrapper:focus-visible {
+    outline: 3px solid #1e40af;
+    outline-offset: 3px;
+}
+
+.management-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #ffffff;
+}
+
+.management-table caption {
+    padding: 0.75rem 0;
+    text-align: left;
+    font-weight: bold;
+}
+
+.management-table th,
+.management-table td {
+    padding: 0.75rem;
+    border: 1px solid #cbd5e1;
+    text-align: left;
+}
+
+.management-table thead th {
+    background-color: #f1f5f9;
+}
