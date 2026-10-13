@@ -2,6 +2,12 @@
 
 require_once 'settings.php';
 
+// connect databse
+$dbconn = mysqli_connect($host, $user, $pwd, $sql_db);
+if (!$dbconn) {
+    echo '<p>Unable to connect to the database.</p>';
+}
+
 $pageTitle = 'Finova Technologies | About the Team';
 $mainLabel = 'About the team';
 include 'header.inc';
@@ -25,9 +31,6 @@ include 'nav.inc';
         <h2>Group Information</h2>
 
         <?php
-        // connect database
-        $dbconn = mysqli_connect($host, $user, $pwd, $sql_db);
-
         if ($dbconn) {
             $query = "SELECT group_name, tutorial_time, tutor_name FROM team_info WHERE team_id = 1";
 
@@ -58,9 +61,9 @@ include 'nav.inc';
                 echo '<p>Group information is not available.</p>';
             }
 
-            mysqli_close($dbconn);
+            mysqli_free_result($result);
         } else {
-            echo '<p>Unable to connect to the database.</p>';
+            echo '<p>Group information is not available.</p>';
         }
         ?>
 
@@ -81,47 +84,47 @@ include 'nav.inc';
 
     </section>
 
-    <!-- Member contributions -->
+    <!-- Member contributions（from team_members + member_contributions table） -->
     <section class="about-section">
 
         <h2>Member Contributions</h2>
 
         <dl class="contributions">
-            <dt>
-                Jiajin Zhang
-                <span class="student-id">105967281</span>
-            </dt>
-            <dd>
-                Responsible for the About the Team Page
-                (about.html), as well as creating the GitHub
-                repository , Pages and user stories and tasks in Jira
-                and maintaining them.
-            </dd>
+            <?php
+            $query = "SELECT m.full_name, m.student_id, c.project_part, c.contribution
+                      FROM team_members m
+                      LEFT JOIN member_contributions c ON m.member_id = c.member_id
+                      ORDER BY m.display_order, c.project_part";
 
-            <dt>
-                Zhenghao Sun
-                <span class="student-id">105965706</span>
-            </dt>
-            <dd>
-                Responsible for the homepage (index.html).
-            </dd>
+            $result = mysqli_query($dbconn, $query);
 
-            <dt>
-                Andy Nguyen
-                <span class="student-id">106748733</span>
-            </dt>
-            <dd>
-                Responsible for the Apply page (apply.html).
-            </dd>
+            if ($result && mysqli_num_rows($result) > 0) {
+                $currentMember = null;
+                while ($row = mysqli_fetch_assoc($result)) {
+                    if ($currentMember !== $row['full_name']) {
+                        if ($currentMember !== null) {
+                            echo '</dd>';
+                        }
+                        $currentMember = $row['full_name'];
+                        echo '<dt>';
+                        echo htmlspecialchars($row['full_name']);
+                        echo ' <span class="student-id">' . htmlspecialchars($row['student_id']) . '</span>';
+                        echo '</dt>';
+                        echo '<dd>';
+                    }
+                    if (!empty($row['contribution'])) {
+                        echo htmlspecialchars($row['project_part']) . ': ' . htmlspecialchars($row['contribution']) . ' ';
+                    } else {
+                        echo htmlspecialchars($row['project_part']) . ': pending... ';
+                    }
+                }
+                echo '</dd>';
+            } else {
+                echo '<p>Member contributions are not available.</p>';
+            }
 
-            <dt>
-                Thaanthep Douangchaleun
-                <span class="student-id">105313376</span>
-            </dt>
-            <dd>
-                Responsible for the Position Description Page
-                (jobs.html).
-            </dd>
+            mysqli_free_result($result);
+            ?>
         </dl>
 
     </section>
