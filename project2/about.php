@@ -1,5 +1,6 @@
 <?php
 
+require_once 'settings.php';
 
 $pageTitle = 'Finova Technologies | About the Team';
 $mainLabel = 'About the team';
@@ -18,27 +19,50 @@ include 'nav.inc';
         </p>
     </section>
 
-    <!-- Group information -->
+    <!-- Group information（from team_info tabel） -->
     <section class="about-section">
 
         <h2>Group Information</h2>
 
-        <ul class="group-info">
-            <li>
-                <strong>Group Name:</strong>
-                Rahul-wed-1430-G04-The brain cells
-                <ul>
+        <?php
+        // connect database
+        $dbconn = mysqli_connect($host, $user, $pwd, $sql_db);
+
+        if ($dbconn) {
+            $query = "SELECT group_name, tutorial_time, tutor_name FROM team_info WHERE team_id = 1";
+
+            // Search
+            $result = mysqli_query($dbconn, $query);
+
+            if ($result && mysqli_num_rows($result) > 0) {
+                $row = mysqli_fetch_assoc($result);
+                ?>
+                <ul class="group-info">
                     <li>
-                        <strong>Tutorial Class Day/Time:</strong>
-                        Wednesday 2:30&ndash;4:30 P.M.
-                    </li>
-                    <li>
-                        <strong>Tutor:</strong>
-                        Rahul Raghavan
+                        <strong>Group Name:</strong>
+                        <?php echo htmlspecialchars($row['group_name']); ?>
+                        <ul>
+                            <li>
+                                <strong>Tutorial Class Day/Time:</strong>
+                                <?php echo htmlspecialchars($row['tutorial_time']); ?>
+                            </li>
+                            <li>
+                                <strong>Tutor:</strong>
+                                <?php echo htmlspecialchars($row['tutor_name']); ?>
+                            </li>
+                        </ul>
                     </li>
                 </ul>
-            </li>
-        </ul>
+                <?php
+            } else {
+                echo '<p>Group information is not available.</p>';
+            }
+
+            mysqli_close($dbconn);
+        } else {
+            echo '<p>Unable to connect to the database.</p>';
+        }
+        ?>
 
     </section>
 
