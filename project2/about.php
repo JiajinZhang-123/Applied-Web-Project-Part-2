@@ -140,43 +140,32 @@ include 'nav.inc';
             translation.
         </p>
 
-        <article class="quote-card">
-            <p class="quote-original">&ldquo;千里之行，始于足下&rdquo;</p>
-            <p class="quote-author">Jiajin Zhang</p>
-            <p class="quote-english">
-                English: A journey of a thousand miles begins with a
-                single step.
-            </p>
-        </article>
+        <?php
+        $query = "SELECT m.full_name, q.original_quote, q.english_translation
+                  FROM member_quotes q
+                  JOIN team_members m ON q.member_id = m.member_id
+                  ORDER BY m.display_order";
 
-        <article class="quote-card">
-            <p class="quote-original">&ldquo;车到山前必有路&rdquo;</p>
-            <p class="quote-author">Zhenghao Sun</p>
-            <p class="quote-english">
-                English: Things will eventually sort themselves out.
-            </p>
-        </article>
+        $result = mysqli_query($dbconn, $query);
 
-        <article class="quote-card">
-            <p class="quote-original">&ldquo;Every problem has a solution.&rdquo;</p>
-            <p class="quote-author">Andy Nguyen</p>
-            <p class="quote-english">
-                English: The philosophy that you can overcome any
-                dilemma, given that you have enough time.
-            </p>
-        </article>
+        if ($result && mysqli_num_rows($result) > 0) {
+            while ($row = mysqli_fetch_assoc($result)) {
+                ?>
+                <article class="quote-card">
+                    <p class="quote-original">&ldquo;<?php echo htmlspecialchars($row['original_quote']); ?>&rdquo;</p>
+                    <p class="quote-author"><?php echo htmlspecialchars($row['full_name']); ?></p>
+                    <p class="quote-english">
+                        English: <?php echo htmlspecialchars($row['english_translation']); ?>
+                    </p>
+                </article>
+                <?php
+            }
+        } else {
+            echo '<p>Quotes are not available.</p>';
+        }
 
-        <article class="quote-card">
-            <p class="quote-original">
-                &ldquo;ຖ້າເຈົ້າມັກໃຫ້ສິ່ງທິ່ງິ່າຍ
-                ເຈົ້າຈະພົບກັບຄວາມຫຍ້ງຍາກ&rdquo;
-            </p>
-            <p class="quote-author">Thaanthep Douangchaleun</p>
-            <p class="quote-english">
-                English: If you like to have things easy, you will
-                have difficulties.
-            </p>
-        </article>
+        mysqli_free_result($result);
+        ?>
 
     </section>
 
@@ -199,38 +188,57 @@ include 'nav.inc';
             </thead>
 
             <tbody>
-                <tr>
-                    <th scope="row">Jiajin Zhang</th>
-                    <td>My father has four older brothers.</td>
-                    <td>I was born in China.</td>
-                </tr>
-                <tr>
-                    <th scope="row">Zhenghao Sun</th>
-                    <td>I am good at all kinds of video games.</td>
-                    <td>
-                        I am skilled at playing the guitar and
-                        have won awards in major competitions.
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="row">Andy Nguyen</th>
-                    <td>
-                        I really enjoy video games, particularly
-                        Overwatch.
-                    </td>
-                    <td>
-                        Penguins are my favourite animals&hellip;
-                        did you know that they have knees o.O
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="row">Thanathep Douangchaleun</th>
-                    <td>I can speak 4 languages.</td>
-                    <td>I am a big fan of Manchester City since 2015.</td>
-                </tr>
+                <?php
+                $query = "SELECT m.full_name, f.display_order, f.fact_text
+                          FROM member_fun_facts f
+                          JOIN team_members m ON f.member_id = m.member_id
+                          ORDER BY m.display_order, f.display_order";
+
+                $result = mysqli_query($dbconn, $query);
+
+                if ($result && mysqli_num_rows($result) > 0) {
+                    $currentMember = null;
+                    $fact1 = '';
+                    $fact2 = '';
+                    while ($row = mysqli_fetch_assoc($result)) {
+                        if ($currentMember !== $row['full_name']) {
+                            if ($currentMember !== null) {
+                                echo '<tr>';
+                                echo '<th scope="row">' . htmlspecialchars($currentMember) . '</th>';
+                                echo '<td>' . htmlspecialchars($fact1) . '</td>';
+                                echo '<td>' . htmlspecialchars($fact2) . '</td>';
+                                echo '</tr>';
+                            }
+                            $currentMember = $row['full_name'];
+                            $fact1 = '';
+                            $fact2 = '';
+                        }
+
+                        if ($row['display_order'] == 1) {
+                            $fact1 = $row['fact_text'];
+                        } else {
+                            $fact2 = $row['fact_text'];
+                        }
+                    }
+                    if ($currentMember !== null) {
+                        echo '<tr>';
+                        echo '<th scope="row">' . htmlspecialchars($currentMember) . '</th>';
+                        echo '<td>' . htmlspecialchars($fact1) . '</td>';
+                        echo '<td>' . htmlspecialchars($fact2) . '</td>';
+                        echo '</tr>';
+                    }
+                } else {
+                    echo '<tr><td colspan="3">Fun facts are not available.</td></tr>';
+                }
+
+                mysqli_free_result($result);
+                ?>
             </tbody>
         </table>
 
     </section>
 
-<?php include 'footer.inc'; ?>
+<?php
+mysqli_close($dbconn);
+include 'footer.inc';
+?>
