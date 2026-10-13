@@ -1,1 +1,2 @@
-# Applied-Web-Project-Part-2
+# Applied Web Project — Part 2
+
