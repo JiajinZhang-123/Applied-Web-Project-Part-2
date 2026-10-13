@@ -572,18 +572,6 @@ footer {
     font-size: 0.95rem;
 }
 
-/* Contributions definition list */
-.contributions dt {
-    margin-top: 1rem;
-    font-weight: bold;
-    color: #0f172a;
-}
-
-.contributions dd {
-    margin-left: 1.5rem;
-    margin-bottom: 0.5rem;
-}
-
 .quote-card {
     margin: 1.5rem 0;
     padding: 1rem 1.5rem;
@@ -688,6 +676,7 @@ footer {
     cursor: pointer;
 }
 
+
 .error-message {
     color: #b91c1c;
     background-color: #fee2e2;
@@ -695,4 +684,34 @@ footer {
     padding: 0.6rem;
     border-radius: 4px;
     margin-bottom: 1rem;
+}
+
+
+.contributions {
+    width: 100%;
+    border-collapse: collapse;  
+    margin-top: 1rem;
+}
+
+.contributions caption {
+    margin-bottom: 0.75rem;
+    font-weight: bold;
+    color: #1e40af;
+}
+
+.contributions th,
+.contributions td {
+    padding: 0.75rem;
+    border: 1px solid #cbd5e1;
+    text-align: left;
+    vertical-align: top;
+}
+
+.contributions thead th {
+    background-color: #1e40af;
+    color: #ffffff;
+}
+
+.contributions tbody tr:hover {
+    background-color: #e0e7ff;
 }

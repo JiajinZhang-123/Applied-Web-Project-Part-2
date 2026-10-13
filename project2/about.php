@@ -91,43 +91,72 @@ include 'nav.inc';
 
         <h2>Member Contributions</h2>
 
-        <dl class="contributions">
-            <?php
-            $query = "SELECT m.full_name, m.student_id, c.project_part, c.contribution
-                      FROM team_members m
-                      LEFT JOIN member_contributions c ON m.member_id = c.member_id
-                      ORDER BY m.display_order, c.project_part";
+        <table class="contributions">
+            <caption>
+                Contributions of each member to both project parts
+            </caption>
 
-            $result = mysqli_query($dbconn, $query);
+            <thead>
+                <tr>
+                    <th scope="col">Member</th>
+                    <th scope="col">Student ID</th>
+                    <th scope="col">Contribution Part 1</th>
+                    <th scope="col">Contribution Part 2</th>
+                </tr>
+            </thead>
 
-            if ($result && mysqli_num_rows($result) > 0) {
-                $currentMember = null;
-                while ($row = mysqli_fetch_assoc($result)) {
-                    if ($currentMember !== $row['full_name']) {
-                        if ($currentMember !== null) {
-                            echo '</dd>';
+            <tbody>
+                <?php
+
+                $query = "SELECT m.full_name, m.student_id, c.project_part, c.contribution
+                          FROM team_members m
+                          LEFT JOIN member_contributions c ON m.member_id = c.member_id
+                          ORDER BY m.display_order, c.project_part";
+
+                $result = mysqli_query($dbconn, $query);
+
+                if ($result && mysqli_num_rows($result) > 0) {
+                    $currentMember = null;
+                    $currentId = '';
+                    $part1 = '';
+                    $part2 = '';
+                    while ($row = mysqli_fetch_assoc($result)) {
+                        if ($currentMember !== null && $currentMember !== $row['full_name']) {
+                            echo '<tr>';
+                            echo '<th scope="row">' . htmlspecialchars($currentMember) . '</th>';
+                            echo '<td>' . htmlspecialchars($currentId) . '</td>';
+                            echo '<td>' . htmlspecialchars($part1) . '</td>';
+                            echo '<td>' . htmlspecialchars($part2) . '</td>';
+                            echo '</tr>';
+                            $part1 = '';
+                            $part2 = '';
                         }
-                        $currentMember = $row['full_name'];
-                        echo '<dt>';
-                        echo htmlspecialchars($row['full_name']);
-                        echo ' <span class="student-id">' . htmlspecialchars($row['student_id']) . '</span>';
-                        echo '</dt>';
-                        echo '<dd>';
-                    }
-                    if (!empty($row['contribution'])) {
-                        echo htmlspecialchars($row['project_part']) . ': ' . htmlspecialchars($row['contribution']) . ' ';
-                    } else {
-                        echo htmlspecialchars($row['project_part']) . ': pending... ';
-                    }
-                }
-                echo '</dd>';
-            } else {
-                echo '<p>Member contributions are not available.</p>';
-            }
 
-            mysqli_free_result($result);
-            ?>
-        </dl>
+                        $currentMember = $row['full_name'];
+                        $currentId = $row['student_id'];
+
+                        if (isset($row['project_part']) && $row['project_part'] === 'Part 2') {
+                            $part2 = empty($row['contribution']) ? 'Pending...' : $row['contribution'];
+                        } else {
+                            $part1 = empty($row['contribution']) ? 'Pending...' : $row['contribution'];
+                        }
+                    }
+                    if ($currentMember !== null) {
+                        echo '<tr>';
+                        echo '<th scope="row">' . htmlspecialchars($currentMember) . '</th>';
+                        echo '<td>' . htmlspecialchars($currentId) . '</td>';
+                        echo '<td>' . htmlspecialchars($part1) . '</td>';
+                        echo '<td>' . htmlspecialchars($part2) . '</td>';
+                        echo '</tr>';
+                    }
+                } else {
+                    echo '<tr><td colspan="4">Member contributions are not available.</td></tr>';
+                }
+
+                mysqli_free_result($result);
+                ?>
+            </tbody>
+        </table>
 
     </section>
 
