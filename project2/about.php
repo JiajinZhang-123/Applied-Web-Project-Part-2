@@ -4,16 +4,19 @@ require_once 'settings.php';
 
 // connect databse
 $dbconn = mysqli_connect($host, $user, $pwd, $sql_db);
-if (!$dbconn) {
-    die('<p>Unable to connect to the database.</p>');
-}
-
-mysqli_set_charset($dbconn, 'utf8mb4');
 
 $pageTitle = 'Finova Technologies | About the Team';
 $mainLabel = 'About the team';
 include 'header.inc';
 include 'nav.inc';
+
+// 连接失败时在页面布局内显示错误提示，而不是输出裸文本
+if (!$dbconn) {
+    echo '<p class="error-message">Unable to connect to the database.</p>';
+    die();
+}
+
+mysqli_set_charset($dbconn, 'utf8mb4');
 ?>
 
     <!-- Page title -->
