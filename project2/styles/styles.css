@@ -715,3 +715,8 @@ footer {
 .contributions tbody tr:hover {
     background-color: #e0e7ff;
 }
+
+/* Homepage inclusion section: spacing kept in the shared stylesheet. */
+.inclusion {
+    margin-top: 2rem;
+}

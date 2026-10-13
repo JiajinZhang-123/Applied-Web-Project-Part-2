@@ -11,7 +11,7 @@ include __DIR__ . '/nav.inc';
 
             <div class="hero-content">
 
-                <p class="eyebrow" style="letter-spacing: 0.15em;">
+                <p class="eyebrow">
                     FINANCIAL TECHNOLOGY
                 </p>
 
@@ -137,7 +137,7 @@ include __DIR__ . '/nav.inc';
         </section>
 
 
-        <section class="inclusion" style="margin-top: 2rem;">
+        <section class="inclusion">
 
             <h2>Inclusive Employment</h2>
 
