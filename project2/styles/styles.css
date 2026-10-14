@@ -760,3 +760,59 @@ footer {
 .management-table thead th {
     background-color: #f1f5f9;
 }
+
+
+/* Management filters use a wrapping grid without changing other forms. */
+.management-filters {
+    margin: 1.5rem 0;
+}
+
+.management-filters fieldset {
+    min-width: 0;
+    padding: 1rem;
+    border: 1px solid #cbd5e1;
+}
+
+.management-filter-fields {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.management-filter-fields label {
+    display: block;
+    margin-bottom: 0.25rem;
+    font-weight: bold;
+}
+
+.management-filter-fields input {
+    width: 100%;
+    min-width: 0;
+    padding: 0.5rem;
+    border: 1px solid #64748b;
+    border-radius: 4px;
+}
+
+.management-filter-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.management-filter-actions button {
+    padding: 0.6rem 1rem;
+    border: 1px solid #1e40af;
+    border-radius: 4px;
+    color: #ffffff;
+    background-color: #1e40af;
+    cursor: pointer;
+}
+
+.management-filters input:focus-visible,
+.management-filter-actions button:focus-visible,
+.management-filter-actions a:focus-visible {
+    outline: 3px solid #1e40af;
+    outline-offset: 3px;
+}

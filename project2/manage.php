@@ -9,10 +9,16 @@ function management_escape($value) {
     return htmlspecialchars((string) $value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 }
 
+$filters = [
+    'job_reference' => isset($_GET['job_reference']) && is_string($_GET['job_reference'])
+        ? strtoupper(trim($_GET['job_reference'])) : ''
+];
+$hasFilters = $filters['job_reference'] !== '';
+
 $applications = [];
 $databaseError = false;
 try {
-    $applications = load_eois();
+    $applications = load_eois($filters);
 } catch (mysqli_sql_exception $error) {
     error_log('HR application list: ' . $error->getMessage());
     $databaseError = true;
@@ -31,16 +37,32 @@ include __DIR__ . '/nav.inc';
         <a href="logout.php">Log out</a>
     </p>
 
-    <h2>All Expressions of Interest</h2>
+    <form action="manage.php" method="get" class="management-filters">
+        <fieldset>
+            <legend>Filter applications</legend>
+            <div class="management-filter-fields">
+                <div>
+                    <label for="job-reference">Job reference</label>
+                    <input type="text" id="job-reference" name="job_reference" maxlength="6"
+                        value="<?php echo management_escape($filters['job_reference']); ?>">
+                </div>
+            </div>
+            <div class="management-filter-actions">
+                <button type="submit">Filter applications</button>
+            </div>
+        </fieldset>
+    </form>
+
+    <h2><?php echo $hasFilters ? 'Filtered Expressions of Interest' : 'All Expressions of Interest'; ?></h2>
     <?php if ($databaseError): ?>
         <p class="error-message" role="alert">Applications could not be loaded. Please try again later.</p>
     <?php elseif (!$applications): ?>
-        <p>No applications have been submitted yet.</p>
+        <p><?php echo $hasFilters ? 'No applications match these filters.' : 'No applications have been submitted yet.'; ?></p>
     <?php else: ?>
         <p><?php echo count($applications); ?> application(s) found.</p>
         <div class="management-table-wrapper" role="region" aria-label="Application records" tabindex="0">
             <table class="management-table">
-                <caption>Submitted job applications, newest EOI number first</caption>
+                <caption>Application results, newest EOI number first</caption>
                 <thead>
                     <tr>
                         <th scope="col">EOI Number</th>
