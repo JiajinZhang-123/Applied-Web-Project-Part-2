@@ -238,39 +238,9 @@ include __DIR__ . '/nav.inc;'
 
 
 
-    <footer>
-
-        <div class="footer-content">
-
-            <p>&copy; 2026 Finova Technologies</p>
-
-            <nav aria-label="Footer navigation">
-
-                <ul>
-                    <li>
-                        <a href="https://jiajinzhang.atlassian.net/jira/software/projects/CGFTFC/boards/2/backlog">
-                            Jira
-                        </a>
-                    </li>
-
-                    <li>
-                        <a href="https://github.com/JiajinZhang-123/COS10026-G04-Financial-Technology-FinTech-Company">
-                            GitHub
-                        </a>
-                    </li>
-
-                    <li>
-                        <a href="mailto:info@finova.example">
-                            Email
-                        </a>
-                    </li>
-                </ul>
-
-            </nav>
-
-        </div>
-
-    </footer>
+   <?php
+   include __DIR__ . '/footer.inc';
+   ?>
 
 </body>
 
