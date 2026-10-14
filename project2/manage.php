@@ -9,20 +9,20 @@ function management_escape($value) {
     return htmlspecialchars((string) $value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 }
 
-$filters = [
-    'job_reference' => isset($_GET['job_reference']) && is_string($_GET['job_reference'])
-        ? strtoupper(trim($_GET['job_reference'])) : '',
-    'first_name' => isset($_GET['first_name']) && is_string($_GET['first_name'])
-        ? trim($_GET['first_name']) : '',
-    'last_name' => isset($_GET['last_name']) && is_string($_GET['last_name'])
-        ? trim($_GET['last_name']) : ''
-];
+$filterInput = read_management_filters($_GET);
+$filters = $filterInput['filters'];
+$filterErrors = $filterInput['errors'];
+if ($filterErrors) {
+    http_response_code(400);
+}
 $hasFilters = count(array_filter($filters, function ($value) { return $value !== ''; })) > 0;
 
 $applications = [];
 $databaseError = false;
 try {
-    $applications = load_eois($filters);
+    if (!$filterErrors) {
+        $applications = load_eois($filters);
+    }
 } catch (mysqli_sql_exception $error) {
     error_log('HR application list: ' . $error->getMessage());
     $databaseError = true;
@@ -44,32 +44,51 @@ include __DIR__ . '/nav.inc';
     <form action="manage.php" method="get" class="management-filters">
         <fieldset>
             <legend>Filter applications</legend>
-            <p>Enter a full first name, last name, or both. Filled fields are combined.</p>
+            <p id="filter-help">Enter a 6-character job reference, a full first name, a full last name, or a combination.
+                Filled fields are combined. Leave all fields blank to list every application.</p>
             <div class="management-filter-fields">
                 <div>
                     <label for="job-reference">Job reference</label>
                     <input type="text" id="job-reference" name="job_reference" maxlength="6"
-                        value="<?php echo management_escape($filters['job_reference']); ?>">
+                        value="<?php echo management_escape($filters['job_reference']); ?>"
+                        aria-describedby="filter-help<?php echo isset($filterErrors['job_reference']) ? ' job-reference-error' : ''; ?>"
+                        <?php if (isset($filterErrors['job_reference'])): ?>aria-invalid="true"<?php endif; ?>>
+                    <?php if (isset($filterErrors['job_reference'])): ?>
+                        <p id="job-reference-error" class="management-field-error"><?php echo management_escape($filterErrors['job_reference']); ?></p>
+                    <?php endif; ?>
                 </div>
                 <div>
                     <label for="first-name">First name</label>
                     <input type="text" id="first-name" name="first_name" maxlength="20"
-                        value="<?php echo management_escape($filters['first_name']); ?>">
+                        value="<?php echo management_escape($filters['first_name']); ?>"
+                        aria-describedby="filter-help<?php echo isset($filterErrors['first_name']) ? ' first-name-error' : ''; ?>"
+                        <?php if (isset($filterErrors['first_name'])): ?>aria-invalid="true"<?php endif; ?>>
+                    <?php if (isset($filterErrors['first_name'])): ?>
+                        <p id="first-name-error" class="management-field-error"><?php echo management_escape($filterErrors['first_name']); ?></p>
+                    <?php endif; ?>
                 </div>
                 <div>
                     <label for="last-name">Last name</label>
                     <input type="text" id="last-name" name="last_name" maxlength="20"
-                        value="<?php echo management_escape($filters['last_name']); ?>">
+                        value="<?php echo management_escape($filters['last_name']); ?>"
+                        aria-describedby="filter-help<?php echo isset($filterErrors['last_name']) ? ' last-name-error' : ''; ?>"
+                        <?php if (isset($filterErrors['last_name'])): ?>aria-invalid="true"<?php endif; ?>>
+                    <?php if (isset($filterErrors['last_name'])): ?>
+                        <p id="last-name-error" class="management-field-error"><?php echo management_escape($filterErrors['last_name']); ?></p>
+                    <?php endif; ?>
                 </div>
             </div>
             <div class="management-filter-actions">
                 <button type="submit">Filter applications</button>
+                <a href="manage.php">Show all applications</a>
             </div>
         </fieldset>
     </form>
 
     <h2><?php echo $hasFilters ? 'Filtered Expressions of Interest' : 'All Expressions of Interest'; ?></h2>
-    <?php if ($databaseError): ?>
+    <?php if ($filterErrors): ?>
+        <p class="error-message" role="alert">Please correct the highlighted filters. No search was performed.</p>
+    <?php elseif ($databaseError): ?>
         <p class="error-message" role="alert">Applications could not be loaded. Please try again later.</p>
     <?php elseif (!$applications): ?>
         <p><?php echo $hasFilters ? 'No applications match these filters.' : 'No applications have been submitted yet.'; ?></p>

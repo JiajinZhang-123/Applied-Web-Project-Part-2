@@ -816,3 +816,13 @@ footer {
     outline: 3px solid #1e40af;
     outline-offset: 3px;
 }
+
+
+.management-field-error {
+    margin: 0.4rem 0 0;
+    color: #b91c1c;
+}
+
+.management-filter-fields input[aria-invalid="true"] {
+    border: 2px solid #b91c1c;
+}

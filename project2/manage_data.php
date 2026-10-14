@@ -1,4 +1,34 @@
 <?php
+// Reject malformed filters before attempting any database connection.
+function read_management_filters($input) {
+    $filters = ['job_reference' => '', 'first_name' => '', 'last_name' => ''];
+    $errors = [];
+    foreach ($filters as $field => $default) {
+        if (!array_key_exists($field, $input)) {
+            continue;
+        }
+        if (!is_string($input[$field])) {
+            $errors[$field] = 'Enter a single text value.';
+            continue;
+        }
+        $value = trim($input[$field]);
+        $filters[$field] = $value;
+        if (!preg_match('//u', $value)) {
+            $errors[$field] = 'Enter valid UTF-8 text.';
+        } elseif ($field === 'job_reference') {
+            $filters[$field] = strtoupper($value);
+            if ($value !== '' && !preg_match('/^[A-Za-z0-9]{6}$/D', $value)) {
+                $errors[$field] = 'Use exactly 6 letters or digits, for example FT0001.';
+            }
+        } elseif (!preg_match('/^.{0,20}$/usD', $value)) {
+            $errors[$field] = 'Use no more than 20 characters.';
+        } elseif (preg_match('/[\x00-\x1F\x7F]/', $value)) {
+            $errors[$field] = 'Names must not contain control characters.';
+        }
+    }
+    return ['filters' => $filters, 'errors' => $errors];
+}
+
 // This helper does not render or expose records when requested directly.
 function load_eois($filters = []) {
     require __DIR__ . '/settings.php';
