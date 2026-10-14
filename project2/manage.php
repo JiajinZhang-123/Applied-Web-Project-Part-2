@@ -11,9 +11,13 @@ function management_escape($value) {
 
 $filters = [
     'job_reference' => isset($_GET['job_reference']) && is_string($_GET['job_reference'])
-        ? strtoupper(trim($_GET['job_reference'])) : ''
+        ? strtoupper(trim($_GET['job_reference'])) : '',
+    'first_name' => isset($_GET['first_name']) && is_string($_GET['first_name'])
+        ? trim($_GET['first_name']) : '',
+    'last_name' => isset($_GET['last_name']) && is_string($_GET['last_name'])
+        ? trim($_GET['last_name']) : ''
 ];
-$hasFilters = $filters['job_reference'] !== '';
+$hasFilters = count(array_filter($filters, function ($value) { return $value !== ''; })) > 0;
 
 $applications = [];
 $databaseError = false;
@@ -40,11 +44,22 @@ include __DIR__ . '/nav.inc';
     <form action="manage.php" method="get" class="management-filters">
         <fieldset>
             <legend>Filter applications</legend>
+            <p>Enter a full first name, last name, or both. Filled fields are combined.</p>
             <div class="management-filter-fields">
                 <div>
                     <label for="job-reference">Job reference</label>
                     <input type="text" id="job-reference" name="job_reference" maxlength="6"
                         value="<?php echo management_escape($filters['job_reference']); ?>">
+                </div>
+                <div>
+                    <label for="first-name">First name</label>
+                    <input type="text" id="first-name" name="first_name" maxlength="20"
+                        value="<?php echo management_escape($filters['first_name']); ?>">
+                </div>
+                <div>
+                    <label for="last-name">Last name</label>
+                    <input type="text" id="last-name" name="last_name" maxlength="20"
+                        value="<?php echo management_escape($filters['last_name']); ?>">
                 </div>
             </div>
             <div class="management-filter-actions">

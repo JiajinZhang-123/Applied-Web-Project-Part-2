@@ -7,15 +7,24 @@ function load_eois($filters = []) {
     try {
         $connection->set_charset('utf8mb4');
         $query = 'SELECT EOInumber, job_reference, first_name, last_name, email, status, submitted_at FROM eoi';
-        $jobReference = $filters['job_reference'] ?? '';
-        if ($jobReference !== '') {
-            $query .= ' WHERE job_reference = ?';
+        $conditions = [];
+        $parameters = [];
+        // Only these fixed column names may be used in the filter query.
+        foreach (['job_reference', 'first_name', 'last_name'] as $field) {
+            $value = $filters[$field] ?? '';
+            if ($value !== '') {
+                $conditions[] = $field . ' = ?';
+                $parameters[] = $value;
+            }
+        }
+        if ($conditions) {
+            $query .= ' WHERE ' . implode(' AND ', $conditions);
         }
         $query .= ' ORDER BY EOInumber DESC';
         $statement = $connection->prepare($query);
         try {
-            if ($jobReference !== '') {
-                $statement->bind_param('s', $jobReference);
+            if ($parameters) {
+                $statement->bind_param(str_repeat('s', count($parameters)), ...$parameters);
             }
             $statement->execute();
             $result = $statement->get_result();
