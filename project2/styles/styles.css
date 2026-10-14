@@ -378,7 +378,8 @@ footer {
     width: 280px;
     flex-shrink: 0;
     position: sticky;
-    top: 20px;
+    align-self: flex-start;
+    top: 90px;
     padding: 20px;
     background-color: #f8f9fb;
     border: 1px solid #d6d9de;
@@ -435,7 +436,7 @@ footer {
     }
 
     .career-tips {
-        position: static;
+        position: sticky;
         width: auto;
         margin: 20px 0;
     }
@@ -463,75 +464,83 @@ footer {
 /* =========================
      APPLICATION FORM
    ========================= */
-    .applyForm {
-        display: flex;
-        gap: 20px;
-        max-width: 700px;
-        margin: 100px auto;
-        padding: 0 20px;
-        align-items: center;
-        background-color: #ffffff;
-        border: 2px solid #dddddd;
-        border-radius: 10px; /* Rounded corners */
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); /* Adds a shadowy effect to the border */
-        justify-content: center;
-    }
+.applyForm {
+    display: flex;
+    gap: 20px;
+    max-width: 700px;
+    margin: 100px auto;
+    padding: 0 20px;
+    align-items: center;
+    background-color: #ffffff;
+    border: 2px solid #dddddd;
+    border-radius: 10px;
+    /* Rounded corners */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    /* Adds a shadowy effect to the border */
+    justify-content: center;
+}
 
-    .applyForm form {
-        width: 100%;
-        max-width: 700px;
-    }
+.applyForm form {
+    width: 100%;
+    max-width: 700px;
+}
 
-    .infoTitle {
-        margin: 0 0 5px; /* Leave a 5 pixel gap between Name and the two field inputs (firstName, lastName)*/
-    }
-    .nameInputs {
-        display:flex; /* Disregards the standard HTML layout rules... also just called flexbox*/
-        gap: 10px;
-        padding: 3px 15px;
-    }
+.infoTitle {
+    margin: 0 0 5px;
+    /* Leave a 5 pixel gap between Name and the two field inputs (firstName, lastName)*/
+}
 
-    .relevantSkills {
-       font-size: 0.875rem;
-    }
+.nameInputs {
+    display: flex;
+    /* Disregards the standard HTML layout rules... also just called flexbox*/
+    gap: 10px;
+    padding: 3px 15px;
+}
 
-    /* 必填字段标签后的红色星号 */
-    .required {
-        color: red;
-    }
+.relevantSkills {
+    font-size: 0.875rem;
+}
 
-    /* 技能复选框：改成两列网格，避免 8 个选项挤在一条 flex 行里 */
-    .skillList .nameInputs {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 8px;
-    }
+/* 必填字段标签后的红色星号 */
+.required {
+    color: red;
+}
 
-    .Submission {
-        display: flex;
-        justify-content: center;
-        gap: 10px;
-        margin-top: 20px;;
-    }
+/* 技能复选框：改成两列网格，避免 8 个选项挤在一条 flex 行里 */
+.skillList .nameInputs {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+}
 
-    .Submission input[type="submit"] { /*Changes any input containers with type submit*/
-        padding: 15px 40px; /*Size of the button*/
-        font-weight: bold;
-        font-size: 1.1rem;
-        
-        color: white;
-        background: linear-gradient(135deg, #1f3158, #405fc2);
+.Submission {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+    ;
+}
 
-        border-radius: 5px;
-        border: none;
+.Submission input[type="submit"] {
+    /*Changes any input containers with type submit*/
+    padding: 15px 40px;
+    /*Size of the button*/
+    font-weight: bold;
+    font-size: 1.1rem;
 
-        cursor: pointer;
-    }
+    color: white;
+    background: linear-gradient(135deg, #1f3158, #405fc2);
 
-    .Submission input[type="submit"]:hover {
-        background: linear-gradient(135deg, #405fc2, #1f3158);
-        color:#b3b1b1
-    }
+    border-radius: 5px;
+    border: none;
+
+    cursor: pointer;
+}
+
+.Submission input[type="submit"]:hover {
+    background: linear-gradient(135deg, #405fc2, #1f3158);
+    color: #b3b1b1
+}
 
 /* =========================
    ABOUT PAGE
@@ -542,7 +551,8 @@ footer {
 
 .about-section {
     max-width: 1000px;
-    margin: 0 auto; /*Automatically divide left and right equally, the content will centered on the screen*/
+    margin: 0 auto;
+    /*Automatically divide left and right equally, the content will centered on the screen*/
     padding: 2rem;
 }
 
@@ -562,7 +572,8 @@ footer {
 .group-figure img {
     width: 100%;
     height: auto;
-    border-radius: 0.5rem; /* Make the picture rounder */
+    border-radius: 0.5rem;
+    /* Make the picture rounder */
     border: 1px solid #cbd5e1;
 }
 
@@ -578,7 +589,8 @@ footer {
 }
 
 .quote-card p {
-    margin: 0; /* Remove the default margin that comes with the <p> tag */
+    margin: 0;
+    /* Remove the default margin that comes with the <p> tag */
 }
 
 
@@ -589,20 +601,22 @@ footer {
 
 
 .quote-card .quote-author {
-    margin-top: 0.4rem;   /* two class names, the weight will increase */
+    margin-top: 0.4rem;
+    /* two class names, the weight will increase */
     font-weight: bold;
     color: #1e40af;
 }
 
 .quote-card .quote-english {
-    margin-top: 0.25rem;  
+    margin-top: 0.25rem;
     color: #6b7280;
     font-size: 0.85rem;
 }
 
 .fun-facts {
     width: 100%;
-    border-collapse: collapse;  /* Merge the table borders */
+    border-collapse: collapse;
+    /* Merge the table borders */
     margin-top: 1rem;
 }
 
@@ -630,6 +644,7 @@ footer {
 }
 
 @media (max-width: 500px) {
+
     /* 手机屏幕上技能选项改回单列 */
     .skillList .nameInputs {
         grid-template-columns: 1fr;
@@ -689,7 +704,7 @@ footer {
 
 .contributions {
     width: 100%;
-    border-collapse: collapse;  
+    border-collapse: collapse;
     margin-top: 1rem;
 }
 
@@ -759,70 +774,4 @@ footer {
 
 .management-table thead th {
     background-color: #f1f5f9;
-}
-
-
-/* Management filters use a wrapping grid without changing other forms. */
-.management-filters {
-    margin: 1.5rem 0;
-}
-
-.management-filters fieldset {
-    min-width: 0;
-    padding: 1rem;
-    border: 1px solid #cbd5e1;
-}
-
-.management-filter-fields {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1rem;
-}
-
-.management-filter-fields label {
-    display: block;
-    margin-bottom: 0.25rem;
-    font-weight: bold;
-}
-
-.management-filter-fields input {
-    width: 100%;
-    min-width: 0;
-    padding: 0.5rem;
-    border: 1px solid #64748b;
-    border-radius: 4px;
-}
-
-.management-filter-actions {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 1rem;
-    margin-top: 1rem;
-}
-
-.management-filter-actions button {
-    padding: 0.6rem 1rem;
-    border: 1px solid #1e40af;
-    border-radius: 4px;
-    color: #ffffff;
-    background-color: #1e40af;
-    cursor: pointer;
-}
-
-.management-filters input:focus-visible,
-.management-filter-actions button:focus-visible,
-.management-filter-actions a:focus-visible {
-    outline: 3px solid #1e40af;
-    outline-offset: 3px;
-}
-
-
-.management-field-error {
-    margin: 0.4rem 0 0;
-    color: #b91c1c;
-}
-
-.management-filter-fields input[aria-invalid="true"] {
-    border: 2px solid #b91c1c;
 }
