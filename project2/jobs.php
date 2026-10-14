@@ -3,6 +3,22 @@
 $pageTitle = 'Finova Technologies | Jobs';
 $mainLabel = 'Job listings';
 
+require_once __DIR__ . '/settings.php';
+
+$conn = mysqli_connect($host,$user,$pwd,$sql_db);
+
+if (!conn) { 
+    die("Database connection fialed.");
+
+}
+
+$sql = "SELECT * FROM jobs ORDERS BY display_order";
+$result = mysqli_connect($conn,$sql)
+
+if (!$result) {
+    die("Unable to retrieve jobs.");
+}
+
 include __DIR__ . '/header.inc';
 include __DIR__ . '/nav.inc';
 ?>
