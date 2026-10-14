@@ -1,24 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
+<?php 
+<?php
+$pageTitle = 'Finova Technologies | Jobs';
+$mainLabel = 'Job listings';
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Finova Technologies | Jobs</title>
-
-
-    <link rel="stylesheet" href="styles/styles.css">
-
-
-    <style>
-        .jobs-intro {
-            letter-spacing: 0.01em;
-        }
-    </style>
-</head>
-
-<body>
+include __DIR__ . '/header.inc';
+?>
 
 
 
