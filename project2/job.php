@@ -4,28 +4,10 @@ $pageTitle = 'Finova Technologies | Jobs';
 $mainLabel = 'Job listings';
 
 include __DIR__ . '/header.inc';
-?>
+include __DIR__ . '/nav.inc;'
+?> 
 
 
-
-    <header>
-        <div class="site-header">
-
-            <a href="index.html" class="logo">
-                FINOVA
-            </a>
-
-            <nav aria-label="Main navigation">
-                <ul>
-                    <li><a href="index.html">Home</a></li>
-                    <li><a href="jobs.html">Jobs</a></li>
-                    <li><a href="apply.html">Apply</a></li>
-                    <li><a href="about.html">About</a></li>
-                </ul>
-            </nav>
-
-        </div>
-    </header>
 
 
 
