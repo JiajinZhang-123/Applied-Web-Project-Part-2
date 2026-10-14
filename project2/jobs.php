@@ -1,5 +1,8 @@
 
 <?php
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+
 $pageTitle = 'Finova Technologies | Jobs';
 $mainLabel = 'Job listings';
 
@@ -7,13 +10,13 @@ require_once __DIR__ . '/settings.php';
 
 $conn = mysqli_connect($host,$user,$pwd,$sql_db);
 
-if (!conn) { 
+if (!$conn) { 
     die("Database connection fialed.");
 
 }
 
-$sql = "SELECT * FROM jobs ORDERS BY display_order";
-$result = mysqli_connect($conn,$sql)
+$sql = "SELECT * FROM jobs ORDER BY display_order";
+$result = mysqli_query($conn,$sql);
 
 if (!$result) {
     die("Unable to retrieve jobs.");
