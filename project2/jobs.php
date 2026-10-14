@@ -22,6 +22,8 @@ if (!$result) {
     die("Unable to retrieve jobs.");
 }
 
+
+
 include __DIR__ . '/header.inc';
 include __DIR__ . '/nav.inc';
 ?>
@@ -40,8 +42,40 @@ include __DIR__ . '/nav.inc';
 <div class="jobs-layout">
 
     <div class="job-list">
+       <?php while ($job = mysqli_fetch_assoc($result)): ?>
 
-        <section class="job">
+    <section class="job">
+
+        <h2><?php echo htmlspecialchars($job['title']); ?></h2>
+
+        <p>
+            <strong>Reference Number:</strong>
+            <?php echo htmlspecialchars($job['job_reference']); ?>
+        </p>
+
+        <p>
+            <?php echo htmlspecialchars($job['description']); ?>
+
+        </p>
+
+        <p>
+    <strong>Salary:</strong>
+    $<?php echo number_format($job['salary_min']); ?>
+    -
+    $<?php echo number_format($job['salary_max']); ?>
+    per <?php echo htmlspecialchars($job['salary_period']); ?>
+</p>
+
+<p>
+    <strong>Reports To:</strong>
+    <?php echo htmlspecialchars($job['reports_to']); ?>
+</p>
+
+    </section>
+<?php endwhile; ?>
+
+
+<section class="job">
             <h2>Data Analyst</h2>
 
             <p><strong>Reference Number:</strong> FT0001</p>
