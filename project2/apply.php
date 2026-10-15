@@ -44,7 +44,7 @@
 
         <div class="applyForm">
 
-            <form action="https://mercury.swin.edu.au/it000000/formtest.php" method="POST">
+            <form action="process_eoi.php" method="POST">
                 <h1 style="text-align: center; background: #dbdcdc;" >Application Form</h1>
                 <br>
                 <fieldset>
