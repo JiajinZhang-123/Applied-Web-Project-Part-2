@@ -29,44 +29,32 @@ function read_management_filters($input) {
     return ['filters' => $filters, 'errors' => $errors];
 }
 
-// This helper does not render or expose records when requested directly.
+// Read applications using the same three optional filters on every query.
 function load_eois($filters = []) {
     require __DIR__ . '/settings.php';
     mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
-    $connection = new mysqli($host, $user, $pwd, $sql_db);
-    try {
-        $connection->set_charset('utf8mb4');
-        $query = 'SELECT EOInumber, job_reference, first_name, last_name, email, status, submitted_at FROM eoi';
-        $conditions = [];
-        $parameters = [];
-        // Only these fixed column names may be used in the filter query.
-        foreach (['job_reference', 'first_name', 'last_name'] as $field) {
-            $value = $filters[$field] ?? '';
-            if ($value !== '') {
-                $conditions[] = $field . ' = ?';
-                $parameters[] = $value;
-            }
-        }
-        if ($conditions) {
-            $query .= ' WHERE ' . implode(' AND ', $conditions);
-        }
-        $query .= ' ORDER BY EOInumber DESC';
-        $statement = $connection->prepare($query);
-        try {
-            if ($parameters) {
-                $statement->bind_param(str_repeat('s', count($parameters)), ...$parameters);
-            }
-            $statement->execute();
-            $result = $statement->get_result();
-            try {
-                return $result->fetch_all(MYSQLI_ASSOC);
-            } finally {
-                $result->free();
-            }
-        } finally {
-            $statement->close();
-        }
-    } finally {
-        $connection->close();
-    }
+    $connection = mysqli_connect($host, $user, $pwd, $sql_db);
+    mysqli_set_charset($connection, 'utf8mb4');
+
+    $jobReference = $filters['job_reference'] ?? '';
+    $firstName = $filters['first_name'] ?? '';
+    $lastName = $filters['last_name'] ?? '';
+
+    // A blank filter accepts every value in that column.
+    $query = "SELECT * FROM eoi
+              WHERE (job_reference = ? OR ? = '')
+                AND (first_name = ? OR ? = '')
+                AND (last_name = ? OR ? = '')
+              ORDER BY EOInumber DESC";
+    $statement = mysqli_prepare($connection, $query);
+    mysqli_stmt_bind_param($statement, 'ssssss',
+        $jobReference, $jobReference, $firstName, $firstName, $lastName, $lastName);
+    mysqli_stmt_execute($statement);
+    $result = mysqli_stmt_get_result($statement);
+    $applications = mysqli_fetch_all($result, MYSQLI_ASSOC);
+
+    mysqli_free_result($result);
+    mysqli_stmt_close($statement);
+    mysqli_close($connection);
+    return $applications;
 }

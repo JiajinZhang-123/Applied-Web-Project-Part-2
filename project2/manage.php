@@ -15,7 +15,8 @@ $filterErrors = $filterInput['errors'];
 if ($filterErrors) {
     http_response_code(400);
 }
-$hasFilters = count(array_filter($filters, function ($value) { return $value !== ''; })) > 0;
+$hasFilters = $filters['job_reference'] !== ''
+    || $filters['first_name'] !== '' || $filters['last_name'] !== '';
 
 $applications = [];
 $databaseError = false;
@@ -106,6 +107,7 @@ include __DIR__ . '/nav.inc';
                         <th scope="col">Email</th>
                         <th scope="col">Status</th>
                         <th scope="col">Submitted</th>
+                        <th scope="col">Application Details</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -118,6 +120,27 @@ include __DIR__ . '/nav.inc';
                             <td><?php echo management_escape($application['email']); ?></td>
                             <td><?php echo management_escape($application['status']); ?></td>
                             <td><?php echo management_escape($application['submitted_at']); ?></td>
+                            <td>
+                                <details>
+                                    <summary>View application #<?php echo management_escape($application['EOInumber']); ?></summary>
+                                    <dl class="management-details">
+                                        <dt>Date of birth</dt>
+                                        <dd><?php echo management_escape($application['date_of_birth']); ?></dd>
+                                        <dt>Gender</dt>
+                                        <dd><?php echo management_escape($application['gender']); ?></dd>
+                                        <dt>Phone</dt>
+                                        <dd><?php echo management_escape($application['phone']); ?></dd>
+                                        <dt>Street address</dt>
+                                        <dd><?php echo management_escape($application['street_address']); ?></dd>
+                                        <dt>Suburb / town</dt>
+                                        <dd><?php echo management_escape($application['suburb_town']); ?></dd>
+                                        <dt>State</dt>
+                                        <dd><?php echo management_escape($application['state']); ?></dd>
+                                        <dt>Postcode</dt>
+                                        <dd><?php echo management_escape($application['postcode']); ?></dd>
+                                    </dl>
+                                </details>
+                            </td>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>

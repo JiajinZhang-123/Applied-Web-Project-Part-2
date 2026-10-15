@@ -793,3 +793,78 @@ footer {
 .management-table thead th {
     background-color: #f1f5f9;
 }
+
+/* HR filter controls follow the existing site's simple form styling. */
+.management-filters {
+    margin: 1.5rem 0;
+}
+
+.management-filters fieldset {
+    min-width: 0;
+    padding: 1rem;
+    border: 1px solid #cbd5e1;
+}
+
+.management-filter-fields {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.management-filter-fields > div {
+    flex: 1 1 200px;
+    min-width: 0;
+}
+
+.management-filter-fields label {
+    display: block;
+    font-weight: bold;
+}
+
+.management-filter-fields input,
+.management-filter-fields select {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #64748b;
+    border-radius: 4px;
+}
+
+.management-filter-actions {
+    margin-top: 1rem;
+}
+
+.management-filter-actions button {
+    margin-right: 1rem;
+    padding: 0.6rem 1rem;
+    border: 1px solid #1e40af;
+    border-radius: 4px;
+    color: white;
+    background-color: #1e40af;
+    cursor: pointer;
+}
+
+.management-field-error {
+    color: #b91c1c;
+}
+
+.management-filter-fields input[aria-invalid="true"] {
+    border: 2px solid #b91c1c;
+}
+
+.management-details {
+    min-width: 180px;
+}
+
+.management-details dt {
+    margin-top: 0.5rem;
+    font-weight: bold;
+}
+
+.management-details dd {
+    margin-left: 0;
+    overflow-wrap: anywhere;
+}
+
+.management-table summary {
+    cursor: pointer;
+}
