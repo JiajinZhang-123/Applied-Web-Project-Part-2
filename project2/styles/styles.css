@@ -371,7 +371,20 @@ footer {
     margin-bottom: 7px;
 }
 
+.search-jobs-link {
+    display: inline-block;
+    padding: 12px 20px;
+    margin: 15px 0 25px;
+    background-color: #f0f0f0;
+    color: #222;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: bold;
+}
 
+.search-jobs-link:hover {
+    background-color: #dddddd;
+}
 
 
 .career-tips {
