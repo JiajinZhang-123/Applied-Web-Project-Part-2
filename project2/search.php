@@ -64,6 +64,10 @@ if (mysqli_num_rows($result) > 0) {
         . number_format($job['salary_max'])
         . " AUD per year</p>";
 
+    echo "<a href='apply.php?job_ref="
+    . urlencode($job['job_reference'])
+    . "'>Apply Now</a>";  
+
     echo "</section>";
     }
 
