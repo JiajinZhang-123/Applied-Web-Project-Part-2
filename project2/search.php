@@ -22,14 +22,19 @@ include __DIR__ . '/nav.inc';
     <input type="text"
            id="keyword"
            name="keyword"
-           placeholder="e.g Data Analyst">
-
+           placeholder="e.g Data Analyst"
+           value="<?php echo htmlspecialchars($_GET['keyword'] ?? ''); ?>">
+           
     <button type="submit">Search</button>
 </form>
 
 <?php
 if (isset($_GET['keyword'])) {
     $keyword = trim($_GET['keyword']);
+
+    if ($keyword === '') {
+        echo "<p>Please enter a keyword to search for jobs.</p>";
+    } else {
     
 
     $sql = "SELECT * FROM jobs
@@ -76,6 +81,7 @@ if (mysqli_num_rows($result) > 0) {
     echo "<p>No matching jobs found.</p>";
 }
    mysqli_stmt_close($stmt);
+}
 }
  mysqli_close($conn);
 
