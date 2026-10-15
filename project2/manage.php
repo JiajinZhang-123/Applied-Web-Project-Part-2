@@ -138,6 +138,22 @@ include __DIR__ . '/nav.inc';
                                         <dd><?php echo management_escape($application['state']); ?></dd>
                                         <dt>Postcode</dt>
                                         <dd><?php echo management_escape($application['postcode']); ?></dd>
+                                        <dt>Selected skills</dt>
+                                        <dd><?php
+                                            if ($application['selected_skills'] !== '') {
+                                                echo management_escape($application['selected_skills']);
+                                            } else {
+                                                echo 'None selected.';
+                                            }
+                                        ?></dd>
+                                        <dt>Other skills</dt>
+                                        <dd><?php
+                                            if (trim((string) $application['other_skills']) !== '') {
+                                                echo management_escape($application['other_skills']);
+                                            } else {
+                                                echo 'Not provided.';
+                                            }
+                                        ?></dd>
                                     </dl>
                                 </details>
                             </td>

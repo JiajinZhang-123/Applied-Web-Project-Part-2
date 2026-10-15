@@ -55,6 +55,23 @@ function load_eois($filters = []) {
 
     mysqli_free_result($result);
     mysqli_stmt_close($statement);
+    // Read selected skills once and group them by their application number.
+    $skills = [];
+    $skillResult = mysqli_query($connection, 'SELECT EOInumber, skill FROM eoi_skills ORDER BY skill');
+    while ($skill = mysqli_fetch_assoc($skillResult)) {
+        $skills[$skill['EOInumber']][] = $skill['skill'];
+    }
+    mysqli_free_result($skillResult);
+
+    foreach ($applications as $index => $application) {
+        $eoiNumber = $application['EOInumber'];
+        if (isset($skills[$eoiNumber])) {
+            $applications[$index]['selected_skills'] = implode(', ', $skills[$eoiNumber]);
+        } else {
+            $applications[$index]['selected_skills'] = '';
+        }
+    }
+
     mysqli_close($connection);
     return $applications;
 }
