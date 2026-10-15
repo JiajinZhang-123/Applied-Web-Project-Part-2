@@ -118,6 +118,12 @@ mysqli_set_charset($dbconn, 'utf8mb4');
                 $result = mysqli_query($dbconn, $query);
 
                 if ($result && mysqli_num_rows($result) > 0) {
+                    function render_contribution($value) {
+                        if (empty($value)) {
+                            return '<span class="pending">Pending...</span>';
+                        }
+                        return htmlspecialchars($value);
+                    }
                     $currentMember = null;
                     $currentId = '';
                     $part1 = '';
@@ -127,8 +133,8 @@ mysqli_set_charset($dbconn, 'utf8mb4');
                             echo '<tr>';
                             echo '<th scope="row">' . htmlspecialchars($currentMember) . '</th>';
                             echo '<td>' . htmlspecialchars($currentId) . '</td>';
-                            echo '<td>' . htmlspecialchars($part1 === '' ? 'Pending...' : $part1) . '</td>';
-                            echo '<td>' . htmlspecialchars($part2 === '' ? 'Pending...' : $part2) . '</td>';
+                            echo '<td>' . render_contribution($part1) . '</td>';
+                            echo '<td>' . render_contribution($part2) . '</td>';
                             echo '</tr>';
                             $part1 = '';
                             $part2 = '';
@@ -138,17 +144,17 @@ mysqli_set_charset($dbconn, 'utf8mb4');
                         $currentId = $row['student_id'];
 
                         if (isset($row['project_part']) && $row['project_part'] === 'Part 2') {
-                            $part2 = empty($row['contribution']) ? 'Pending...' : $row['contribution'];
+                            $part2 = $row['contribution'];
                         } else {
-                            $part1 = empty($row['contribution']) ? 'Pending...' : $row['contribution'];
+                            $part1 = $row['contribution'];
                         }
                     }
                     if ($currentMember !== null) {
                         echo '<tr>';
                         echo '<th scope="row">' . htmlspecialchars($currentMember) . '</th>';
                         echo '<td>' . htmlspecialchars($currentId) . '</td>';
-                        echo '<td>' . htmlspecialchars($part1 === '' ? 'Pending...' : $part1) . '</td>';
-                        echo '<td>' . htmlspecialchars($part2 === '' ? 'Pending...' : $part2) . '</td>';
+                        echo '<td>' . render_contribution($part1) . '</td>';
+                        echo '<td>' . render_contribution($part2) . '</td>';
                         echo '</tr>';
                     }
                 } else {
