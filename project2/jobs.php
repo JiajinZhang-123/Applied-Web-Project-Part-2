@@ -23,6 +23,7 @@ include __DIR__ . '/header.inc';
 include __DIR__ . '/nav.inc';
 ?>
 
+
 <section class="jobs jobs-intro">
     <h1 style="letter-spacing: 0.02em;">
         Careers at Finova Technologies
@@ -32,6 +33,12 @@ include __DIR__ . '/nav.inc';
         Explore our current FinTech career opportunities and
         find a role that matches your skills and interests.
     </p>
+
+    <h2>Available Jobs</h2>
+    <a href="search.php" class="search-jobs-link">
+        🔍 Search Jobs →
+    </a>
+    
 </section>
 
 <div class="jobs-layout">
