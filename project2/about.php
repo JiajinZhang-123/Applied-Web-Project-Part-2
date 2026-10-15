@@ -10,7 +10,6 @@ $mainLabel = 'About the team';
 include 'header.inc';
 include 'nav.inc';
 
-// 连接失败时在页面布局内显示错误提示，而不是输出裸文本
 if (!$dbconn) {
     echo '<p class="error-message">Unable to connect to the database.</p>';
     die();
@@ -128,8 +127,8 @@ mysqli_set_charset($dbconn, 'utf8mb4');
                             echo '<tr>';
                             echo '<th scope="row">' . htmlspecialchars($currentMember) . '</th>';
                             echo '<td>' . htmlspecialchars($currentId) . '</td>';
-                            echo '<td>' . htmlspecialchars($part1) . '</td>';
-                            echo '<td>' . htmlspecialchars($part2) . '</td>';
+                            echo '<td>' . htmlspecialchars($part1 === '' ? 'Pending...' : $part1) . '</td>';
+                            echo '<td>' . htmlspecialchars($part2 === '' ? 'Pending...' : $part2) . '</td>';
                             echo '</tr>';
                             $part1 = '';
                             $part2 = '';
@@ -148,8 +147,8 @@ mysqli_set_charset($dbconn, 'utf8mb4');
                         echo '<tr>';
                         echo '<th scope="row">' . htmlspecialchars($currentMember) . '</th>';
                         echo '<td>' . htmlspecialchars($currentId) . '</td>';
-                        echo '<td>' . htmlspecialchars($part1) . '</td>';
-                        echo '<td>' . htmlspecialchars($part2) . '</td>';
+                        echo '<td>' . htmlspecialchars($part1 === '' ? 'Pending...' : $part1) . '</td>';
+                        echo '<td>' . htmlspecialchars($part2 === '' ? 'Pending...' : $part2) . '</td>';
                         echo '</tr>';
                     }
                 } else {
