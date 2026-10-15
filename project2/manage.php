@@ -18,11 +18,17 @@ if ($filterErrors) {
 $hasFilters = $filters['job_reference'] !== ''
     || $filters['first_name'] !== '' || $filters['last_name'] !== '';
 
+$sortField = 'EOInumber';
+if (isset($_GET['sort']) && is_string($_GET['sort'])
+    && array_key_exists($_GET['sort'], $managementSortFields)) {
+    $sortField = $_GET['sort'];
+}
+
 $applications = [];
 $databaseError = false;
 try {
     if (!$filterErrors) {
-        $applications = load_eois($filters);
+        $applications = load_eois($filters, $sortField);
     }
 } catch (mysqli_sql_exception $error) {
     error_log('HR application list: ' . $error->getMessage());
@@ -78,7 +84,16 @@ include __DIR__ . '/nav.inc';
                         <p id="last-name-error" class="management-field-error"><?php echo management_escape($filterErrors['last_name']); ?></p>
                     <?php endif; ?>
                 </div>
+                <div>
+                    <label for="sort-field">Sort by</label>
+                    <select id="sort-field" name="sort" aria-describedby="sort-help">
+                        <?php foreach ($managementSortFields as $field => $label): ?>
+                            <option value="<?php echo management_escape($field); ?>"<?php if ($sortField === $field): ?> selected<?php endif; ?>><?php echo management_escape($label); ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
             </div>
+            <p id="sort-help">EOI numbers are shown newest first. Other fields use ascending order.</p>
             <div class="management-filter-actions">
                 <button type="submit">Filter applications</button>
                 <a href="manage.php">Show all applications</a>
@@ -97,7 +112,7 @@ include __DIR__ . '/nav.inc';
         <p><?php echo count($applications); ?> application(s) found.</p>
         <div class="management-table-wrapper" role="region" aria-label="Application records" tabindex="0">
             <table class="management-table">
-                <caption>Application results, newest EOI number first</caption>
+                <caption>Application results sorted by <?php echo management_escape($managementSortFields[$sortField]); ?><?php echo $sortField === 'EOInumber' ? ' (newest first)' : ' (ascending)'; ?></caption>
                 <thead>
                     <tr>
                         <th scope="col">EOI Number</th>

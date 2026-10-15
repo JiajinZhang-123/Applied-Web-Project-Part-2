@@ -29,8 +29,29 @@ function read_management_filters($input) {
     return ['filters' => $filters, 'errors' => $errors];
 }
 
+// Fixed database column names and their labels for the sorting dropdown.
+$managementSortFields = [
+    'EOInumber' => 'EOI Number',
+    'job_reference' => 'Job Reference',
+    'first_name' => 'First Name',
+    'last_name' => 'Last Name',
+    'email' => 'Email',
+    'status' => 'Status',
+    'submitted_at' => 'Submitted'
+];
+
 // Read applications using the same three optional filters on every query.
-function load_eois($filters = []) {
+function load_eois($filters = [], $sortField = 'EOInumber') {
+    global $managementSortFields;
+    // Column names cannot be bound as parameters, so use only fixed choices.
+    if (!array_key_exists($sortField, $managementSortFields)) {
+        $sortField = 'EOInumber';
+    }
+    if ($sortField === 'EOInumber') {
+        $orderBy = 'EOInumber DESC';
+    } else {
+        $orderBy = $sortField . ' ASC, EOInumber DESC';
+    }
     require __DIR__ . '/settings.php';
     mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
     $connection = mysqli_connect($host, $user, $pwd, $sql_db);
@@ -45,7 +66,7 @@ function load_eois($filters = []) {
               WHERE (job_reference = ? OR ? = '')
                 AND (first_name = ? OR ? = '')
                 AND (last_name = ? OR ? = '')
-              ORDER BY EOInumber DESC";
+              ORDER BY " . $orderBy;
     $statement = mysqli_prepare($connection, $query);
     mysqli_stmt_bind_param($statement, 'ssssss',
         $jobReference, $jobReference, $firstName, $firstName, $lastName, $lastName);
