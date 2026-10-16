@@ -1,30 +1,28 @@
 <?php
-// Reject malformed filters before attempting any database connection.
+// Read the three optional search fields and report basic input errors.
 function read_management_filters($input) {
-    $filters = ['job_reference' => '', 'first_name' => '', 'last_name' => ''];
+    $fields = ['job_reference' => 'Job reference', 'first_name' => 'First name', 'last_name' => 'Last name'];
+    $filters = [];
     $errors = [];
-    foreach ($filters as $field => $default) {
-        if (!array_key_exists($field, $input)) {
+    foreach ($fields as $field => $label) {
+        $filters[$field] = '';
+        if (!isset($input[$field])) {
             continue;
         }
         if (!is_string($input[$field])) {
-            $errors[$field] = 'Enter a single text value.';
+            $errors[] = $label . ' must be a single text value.';
             continue;
         }
         $value = trim($input[$field]);
-        $filters[$field] = $value;
-        if (!preg_match('//u', $value)) {
-            $errors[$field] = 'Enter valid UTF-8 text.';
-        } elseif ($field === 'job_reference') {
-            $filters[$field] = strtoupper($value);
-            if ($value !== '' && !preg_match('/^[A-Za-z0-9]{6}$/D', $value)) {
-                $errors[$field] = 'Use exactly 6 letters or digits, for example FT0001.';
+        if ($field === 'job_reference') {
+            $value = strtoupper($value);
+            if ($value !== '' && !preg_match('/^[A-Z0-9]{6}$/', $value)) {
+                $errors[] = 'Job reference must contain 6 letters or digits.';
             }
-        } elseif (!preg_match('/^.{0,20}$/usD', $value)) {
-            $errors[$field] = 'Use no more than 20 characters.';
-        } elseif (preg_match('/[\x00-\x1F\x7F]/', $value)) {
-            $errors[$field] = 'Names must not contain control characters.';
+        } elseif (mb_strlen($value, 'UTF-8') > 20) {
+            $errors[] = $label . ' must contain no more than 20 characters.';
         }
+        $filters[$field] = $value;
     }
     return ['filters' => $filters, 'errors' => $errors];
 }

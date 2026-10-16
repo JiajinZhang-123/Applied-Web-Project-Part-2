@@ -843,13 +843,6 @@ footer {
     cursor: pointer;
 }
 
-.management-field-error {
-    color: #b91c1c;
-}
-
-.management-filter-fields input[aria-invalid="true"] {
-    border: 2px solid #b91c1c;
-}
 
 .management-details {
     min-width: 180px;

@@ -58,37 +58,27 @@ include __DIR__ . '/nav.inc';
                     <label for="job-reference">Job reference</label>
                     <input type="text" id="job-reference" name="job_reference" maxlength="6"
                         value="<?php echo management_escape($filters['job_reference']); ?>"
-                        aria-describedby="filter-help<?php echo isset($filterErrors['job_reference']) ? ' job-reference-error' : ''; ?>"
-                        <?php if (isset($filterErrors['job_reference'])): ?>aria-invalid="true"<?php endif; ?>>
-                    <?php if (isset($filterErrors['job_reference'])): ?>
-                        <p id="job-reference-error" class="management-field-error"><?php echo management_escape($filterErrors['job_reference']); ?></p>
-                    <?php endif; ?>
+                        aria-describedby="filter-help">
                 </div>
                 <div>
                     <label for="first-name">First name</label>
                     <input type="text" id="first-name" name="first_name" maxlength="20"
                         value="<?php echo management_escape($filters['first_name']); ?>"
-                        aria-describedby="filter-help<?php echo isset($filterErrors['first_name']) ? ' first-name-error' : ''; ?>"
-                        <?php if (isset($filterErrors['first_name'])): ?>aria-invalid="true"<?php endif; ?>>
-                    <?php if (isset($filterErrors['first_name'])): ?>
-                        <p id="first-name-error" class="management-field-error"><?php echo management_escape($filterErrors['first_name']); ?></p>
-                    <?php endif; ?>
+                        aria-describedby="filter-help">
                 </div>
                 <div>
                     <label for="last-name">Last name</label>
                     <input type="text" id="last-name" name="last_name" maxlength="20"
                         value="<?php echo management_escape($filters['last_name']); ?>"
-                        aria-describedby="filter-help<?php echo isset($filterErrors['last_name']) ? ' last-name-error' : ''; ?>"
-                        <?php if (isset($filterErrors['last_name'])): ?>aria-invalid="true"<?php endif; ?>>
-                    <?php if (isset($filterErrors['last_name'])): ?>
-                        <p id="last-name-error" class="management-field-error"><?php echo management_escape($filterErrors['last_name']); ?></p>
-                    <?php endif; ?>
+                        aria-describedby="filter-help">
                 </div>
                 <div>
                     <label for="sort-field">Sort by</label>
                     <select id="sort-field" name="sort" aria-describedby="sort-help">
                         <?php foreach ($managementSortFields as $field => $label): ?>
-                            <option value="<?php echo management_escape($field); ?>"<?php if ($sortField === $field): ?> selected<?php endif; ?>><?php echo management_escape($label); ?></option>
+                            <option value="<?php echo management_escape($field); ?>"<?php if ($sortField === $field): ?> selected<?php endif; ?>>
+                                <?php echo management_escape($label); ?>
+                            </option>
                         <?php endforeach; ?>
                     </select>
                 </div>
@@ -103,7 +93,14 @@ include __DIR__ . '/nav.inc';
 
     <h2><?php echo $hasFilters ? 'Filtered Expressions of Interest' : 'All Expressions of Interest'; ?></h2>
     <?php if ($filterErrors): ?>
-        <p class="error-message" role="alert">Please correct the highlighted filters. No search was performed.</p>
+        <div class="error-message" role="alert">
+            <p>Please correct the filters. No search was performed.</p>
+            <ul>
+                <?php foreach ($filterErrors as $message): ?>
+                    <li><?php echo management_escape($message); ?></li>
+                <?php endforeach; ?>
+            </ul>
+        </div>
     <?php elseif ($databaseError): ?>
         <p class="error-message" role="alert">Applications could not be loaded. Please try again later.</p>
     <?php elseif (!$applications): ?>
@@ -112,7 +109,10 @@ include __DIR__ . '/nav.inc';
         <p><?php echo count($applications); ?> application(s) found.</p>
         <div class="management-table-wrapper" role="region" aria-label="Application records" tabindex="0">
             <table class="management-table">
-                <caption>Application results sorted by <?php echo management_escape($managementSortFields[$sortField]); ?><?php echo $sortField === 'EOInumber' ? ' (newest first)' : ' (ascending)'; ?></caption>
+                <caption>
+                    Application results sorted by <?php echo management_escape($managementSortFields[$sortField]); ?>
+                    <?php if ($sortField === 'EOInumber'): ?>(newest first)<?php else: ?>(ascending)<?php endif; ?>
+                </caption>
                 <thead>
                     <tr>
                         <th scope="col">EOI Number</th>
