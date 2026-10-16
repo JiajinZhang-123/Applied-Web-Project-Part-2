@@ -8,6 +8,13 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
+$username = trim($_POST['username'] ?? '');
+$password = $_POST['password'] ?? '';
+if ($username === '' || $password === '') {
+    header('Location: login.php?error=1');
+    exit;
+}
+
 $dbconn = mysqli_connect($host, $user, $pwd, $sql_db);
 
 if (!$dbconn) {
@@ -15,8 +22,6 @@ if (!$dbconn) {
 }
 
 mysqli_set_charset($dbconn, 'utf8mb4');
-
-$username = trim($_POST['username']);
 
 $query = "SELECT user_id, password_hash FROM users WHERE username = ?";
 
