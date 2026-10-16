@@ -27,6 +27,8 @@ function read_management_filters($input) {
     return ['filters' => $filters, 'errors' => $errors];
 }
 
+$managementStatuses = ['New', 'Current', 'Final'];
+
 // Fixed database column names and their labels for the sorting dropdown.
 $managementSortFields = [
     'EOInumber' => 'EOI Number',
@@ -93,4 +95,19 @@ function load_eois($filters = [], $sortField = 'EOInumber') {
 
     mysqli_close($connection);
     return $applications;
+}
+
+// Update one application using a parameterized SQL statement.
+function change_eoi_status($eoiNumber, $status) {
+    require __DIR__ . '/settings.php';
+    mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+    $connection = mysqli_connect($host, $user, $pwd, $sql_db);
+    mysqli_set_charset($connection, 'utf8mb4');
+    $statement = mysqli_prepare($connection, 'UPDATE eoi SET status = ? WHERE EOInumber = ?');
+    mysqli_stmt_bind_param($statement, 'si', $status, $eoiNumber);
+    mysqli_stmt_execute($statement);
+    $changed = mysqli_stmt_affected_rows($statement);
+    mysqli_stmt_close($statement);
+    mysqli_close($connection);
+    return $changed;
 }

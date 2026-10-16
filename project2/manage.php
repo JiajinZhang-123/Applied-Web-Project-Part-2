@@ -5,6 +5,13 @@ require_once __DIR__ . '/auth.php';
 require_login();
 require_once __DIR__ . '/manage_data.php';
 
+// The hidden token ties a status update to this logged-in browser session.
+if (!isset($_SESSION['management_token'])) {
+    $_SESSION['management_token'] = bin2hex(random_bytes(16));
+}
+$statusMessage = $_SESSION['status_message'] ?? '';
+unset($_SESSION['status_message']);
+
 function management_escape($value) {
     return htmlspecialchars((string) $value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 }
@@ -47,6 +54,10 @@ include __DIR__ . '/nav.inc';
     <p>Signed in as <?php echo management_escape($_SESSION['user']); ?>.
         <a href="logout.php">Log out</a>
     </p>
+
+    <?php if ($statusMessage !== ''): ?>
+        <p role="status"><?php echo management_escape($statusMessage); ?></p>
+    <?php endif; ?>
 
     <form action="manage.php" method="get" class="management-filters">
         <fieldset>
@@ -133,7 +144,21 @@ include __DIR__ . '/nav.inc';
                             <td><?php echo management_escape($application['first_name']); ?></td>
                             <td><?php echo management_escape($application['last_name']); ?></td>
                             <td><?php echo management_escape($application['email']); ?></td>
-                            <td><?php echo management_escape($application['status']); ?></td>
+                            <td>
+                                <form action="update_status.php" method="post" class="management-status-form">
+                                    <input type="hidden" name="EOInumber" value="<?php echo management_escape($application['EOInumber']); ?>">
+                                    <input type="hidden" name="token" value="<?php echo management_escape($_SESSION['management_token']); ?>">
+                                    <label for="status-<?php echo management_escape($application['EOInumber']); ?>">Status</label>
+                                    <select id="status-<?php echo management_escape($application['EOInumber']); ?>" name="status">
+                                        <?php foreach ($managementStatuses as $status): ?>
+                                            <option value="<?php echo management_escape($status); ?>"<?php if ($application['status'] === $status): ?> selected<?php endif; ?>>
+                                                <?php echo management_escape($status); ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                    <button type="submit">Update</button>
+                                </form>
+                            </td>
                             <td><?php echo management_escape($application['submitted_at']); ?></td>
                             <td>
                                 <details>

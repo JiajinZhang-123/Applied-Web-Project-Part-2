@@ -833,7 +833,8 @@ footer {
     margin-top: 1rem;
 }
 
-.management-filter-actions button {
+.management-filter-actions button,
+.management-status-form button {
     margin-right: 1rem;
     padding: 0.6rem 1rem;
     border: 1px solid #1e40af;
@@ -860,4 +861,19 @@ footer {
 
 .management-table summary {
     cursor: pointer;
+}
+
+
+.management-status-form label {
+    display: block;
+}
+
+.management-status-form select {
+    min-width: 90px;
+    padding: 0.4rem;
+}
+
+.management-status-form button {
+    display: block;
+    margin-top: 0.4rem;
 }
