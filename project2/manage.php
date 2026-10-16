@@ -148,6 +148,10 @@ include __DIR__ . '/nav.inc';
                                 <form action="update_status.php" method="post" class="management-status-form">
                                     <input type="hidden" name="EOInumber" value="<?php echo management_escape($application['EOInumber']); ?>">
                                     <input type="hidden" name="token" value="<?php echo management_escape($_SESSION['management_token']); ?>">
+                                    <?php foreach ($filters as $field => $value): ?>
+                                        <input type="hidden" name="<?php echo management_escape($field); ?>" value="<?php echo management_escape($value); ?>">
+                                    <?php endforeach; ?>
+                                    <input type="hidden" name="sort" value="<?php echo management_escape($sortField); ?>">
                                     <label for="status-<?php echo management_escape($application['EOInumber']); ?>">Status</label>
                                     <select id="status-<?php echo management_escape($application['EOInumber']); ?>" name="status">
                                         <?php foreach ($managementStatuses as $status): ?>

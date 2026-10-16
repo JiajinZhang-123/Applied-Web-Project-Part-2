@@ -108,6 +108,21 @@ function change_eoi_status($eoiNumber, $status) {
     mysqli_stmt_execute($statement);
     $changed = mysqli_stmt_affected_rows($statement);
     mysqli_stmt_close($statement);
+    if ($changed > 0) {
+        $result = 'updated';
+    } else {
+        // Zero changed rows can mean either the same status or a missing EOI.
+        $statement = mysqli_prepare($connection, 'SELECT EOInumber FROM eoi WHERE EOInumber = ?');
+        mysqli_stmt_bind_param($statement, 'i', $eoiNumber);
+        mysqli_stmt_execute($statement);
+        mysqli_stmt_store_result($statement);
+        if (mysqli_stmt_num_rows($statement) > 0) {
+            $result = 'unchanged';
+        } else {
+            $result = 'not_found';
+        }
+        mysqli_stmt_close($statement);
+    }
     mysqli_close($connection);
-    return $changed;
+    return $result;
 }
