@@ -2,7 +2,7 @@
 require_once 'auth.php';
 require_once 'settings.php';
 
-// Only POST submissions are accepted; direct access will redirect to the login page
+//Only POST submissions are accepted; direct access will redirect to the login page
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header('Location: login.php');
     exit;
@@ -21,10 +21,11 @@ if (!$dbconn) {
     die('<p>Unable to connect to the database.</p>');
 }
 
-mysqli_set_charset($dbconn, 'utf8mb4');
+mysqli_set_charset($dbconn, 'utf8mb4'); // Character Set
 
 $query = "SELECT user_id, password_hash FROM users WHERE username = ?";
 
+// Use prepared statements to prevent SQL injection
 $stmt = mysqli_prepare($dbconn, $query);
 
 if ($stmt) {

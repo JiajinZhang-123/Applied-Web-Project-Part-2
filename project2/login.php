@@ -1,7 +1,7 @@
 <?php
 require_once 'auth.php';
+// Display the HR Login Form
 
-// Logged-in users can skip directly to the management page
 if (is_logged_in()) {
     header('Location: manage.php');
     exit;

@@ -22,10 +22,7 @@ h3 {
 
 
 
-/* =========================
-   顶部导航栏（全站共用）
-   sticky 让导航在滚动时固定在页面顶部
-   ========================= */
+
 header {
     position: sticky;
     top: 0;
@@ -106,11 +103,7 @@ nav a:focus {
     font-size: 1.1rem;
 }
 
-/* =========================
-   页面横幅（Hero）共用样式
-   apply / jobs / about 三页使用同一套渐变与配色，
-   集中定义避免重复
-   ========================= */
+
 .heroApply,
 .jobs,
 .about-hero {
@@ -298,7 +291,7 @@ footer {
     text-align: left;
 }
 
-/* jobs 与 about 的横幅标题、段落样式一致，合并定义 */
+
 .jobs h1,
 .about-hero h1 {
     font-size: 2.5rem;
@@ -454,7 +447,7 @@ footer {
         margin: 20px 0;
     }
 
-    /* apply 页横幅与表单在窄屏下的调整 */
+
     .heroApply {
         min-height: 220px;
     }
@@ -514,12 +507,12 @@ footer {
     font-size: 0.875rem;
 }
 
-/* 必填字段标签后的红色星号 */
+
 .required {
     color: red;
 }
 
-/* 技能复选框：改成两列网格，避免 8 个选项挤在一条 flex 行里 */
+
 .skillList .nameInputs {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -559,8 +552,7 @@ footer {
    ABOUT PAGE
    ========================= */
 
-/* .about-hero 的横幅背景、标题与段落样式已与 .jobs 合并，
-   见「JOBS HERO SECTION」区块，避免重复定义 */
+
 
 .about-section {
     max-width: 1000px;
@@ -658,7 +650,7 @@ footer {
 
 @media (max-width: 500px) {
 
-    /* 手机屏幕上技能选项改回单列 */
+    
     .skillList .nameInputs {
         grid-template-columns: 1fr;
     }
