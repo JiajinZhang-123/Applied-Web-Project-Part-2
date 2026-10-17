@@ -110,10 +110,14 @@ mysqli_set_charset($dbconn, 'utf8mb4');
             <tbody>
                 <?php
 
-                $query = "SELECT m.full_name, m.student_id, c.project_part, c.contribution
+                // Aggregate the two contribution rows (Part 1 / Part 2) into one row per member
+                $query = "SELECT m.full_name, m.student_id,
+                                 MAX(CASE WHEN c.project_part = 'Part 1' THEN c.contribution END) AS part1,
+                                 MAX(CASE WHEN c.project_part = 'Part 2' THEN c.contribution END) AS part2
                           FROM team_members m
                           LEFT JOIN member_contributions c ON m.member_id = c.member_id
-                          ORDER BY m.display_order, c.project_part";
+                          GROUP BY m.member_id, m.full_name, m.student_id
+                          ORDER BY m.display_order";
 
                 $result = mysqli_query($dbconn, $query);
 
@@ -124,37 +128,12 @@ mysqli_set_charset($dbconn, 'utf8mb4');
                         }
                         return htmlspecialchars($value);
                     }
-                    $currentMember = null;
-                    $currentId = '';
-                    $part1 = '';
-                    $part2 = '';
                     while ($row = mysqli_fetch_assoc($result)) {
-                        if ($currentMember !== null && $currentMember !== $row['full_name']) {
-                            echo '<tr>';
-                            echo '<th scope="row">' . htmlspecialchars($currentMember) . '</th>';
-                            echo '<td>' . htmlspecialchars($currentId) . '</td>';
-                            echo '<td>' . render_contribution($part1) . '</td>';
-                            echo '<td>' . render_contribution($part2) . '</td>';
-                            echo '</tr>';
-                            $part1 = '';
-                            $part2 = '';
-                        }
-
-                        $currentMember = $row['full_name'];
-                        $currentId = $row['student_id'];
-
-                        if (isset($row['project_part']) && $row['project_part'] === 'Part 2') {
-                            $part2 = $row['contribution'];
-                        } else {
-                            $part1 = $row['contribution'];
-                        }
-                    }
-                    if ($currentMember !== null) {
                         echo '<tr>';
-                        echo '<th scope="row">' . htmlspecialchars($currentMember) . '</th>';
-                        echo '<td>' . htmlspecialchars($currentId) . '</td>';
-                        echo '<td>' . render_contribution($part1) . '</td>';
-                        echo '<td>' . render_contribution($part2) . '</td>';
+                        echo '<th scope="row">' . htmlspecialchars($row['full_name']) . '</th>';
+                        echo '<td>' . htmlspecialchars($row['student_id']) . '</td>';
+                        echo '<td>' . render_contribution($row['part1']) . '</td>';
+                        echo '<td>' . render_contribution($row['part2']) . '</td>';
                         echo '</tr>';
                     }
                 } else {
@@ -228,42 +207,23 @@ mysqli_set_charset($dbconn, 'utf8mb4');
 
             <tbody>
                 <?php
-                $query = "SELECT m.full_name, f.display_order, f.fact_text
-                          FROM member_fun_facts f
-                          JOIN team_members m ON f.member_id = m.member_id
-                          ORDER BY m.display_order, f.display_order";
+                // Aggregate the two fun-fact rows into one row per member
+                $query = "SELECT m.full_name,
+                                 MAX(CASE WHEN f.display_order = 1 THEN f.fact_text END) AS fact1,
+                                 MAX(CASE WHEN f.display_order = 2 THEN f.fact_text END) AS fact2
+                          FROM team_members m
+                          LEFT JOIN member_fun_facts f ON m.member_id = f.member_id
+                          GROUP BY m.member_id, m.full_name
+                          ORDER BY m.display_order";
 
                 $result = mysqli_query($dbconn, $query);
 
                 if ($result && mysqli_num_rows($result) > 0) {
-                    $currentMember = null;
-                    $fact1 = '';
-                    $fact2 = '';
                     while ($row = mysqli_fetch_assoc($result)) {
-                        if ($currentMember !== $row['full_name']) {
-                            if ($currentMember !== null) {
-                                echo '<tr>';
-                                echo '<th scope="row">' . htmlspecialchars($currentMember) . '</th>';
-                                echo '<td>' . htmlspecialchars($fact1) . '</td>';
-                                echo '<td>' . htmlspecialchars($fact2) . '</td>';
-                                echo '</tr>';
-                            }
-                            $currentMember = $row['full_name'];
-                            $fact1 = '';
-                            $fact2 = '';
-                        }
-
-                        if ($row['display_order'] == 1) {
-                            $fact1 = $row['fact_text'];
-                        } else {
-                            $fact2 = $row['fact_text'];
-                        }
-                    }
-                    if ($currentMember !== null) {
                         echo '<tr>';
-                        echo '<th scope="row">' . htmlspecialchars($currentMember) . '</th>';
-                        echo '<td>' . htmlspecialchars($fact1) . '</td>';
-                        echo '<td>' . htmlspecialchars($fact2) . '</td>';
+                        echo '<th scope="row">' . htmlspecialchars($row['full_name']) . '</th>';
+                        echo '<td>' . htmlspecialchars($row['fact1']) . '</td>';
+                        echo '<td>' . htmlspecialchars($row['fact2']) . '</td>';
                         echo '</tr>';
                     }
                 } else {
