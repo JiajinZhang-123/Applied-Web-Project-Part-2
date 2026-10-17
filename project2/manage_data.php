@@ -126,3 +126,19 @@ function change_eoi_status($eoiNumber, $status) {
     mysqli_close($connection);
     return $result;
 }
+
+// Count matching applications before asking the manager to confirm deletion.
+function count_eois_by_job($jobReference) {
+    require __DIR__ . '/settings.php';
+    mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+    $connection = mysqli_connect($host, $user, $pwd, $sql_db);
+    mysqli_set_charset($connection, 'utf8mb4');
+    $statement = mysqli_prepare($connection, 'SELECT COUNT(*) FROM eoi WHERE job_reference = ?');
+    mysqli_stmt_bind_param($statement, 's', $jobReference);
+    mysqli_stmt_execute($statement);
+    mysqli_stmt_bind_result($statement, $count);
+    mysqli_stmt_fetch($statement);
+    mysqli_stmt_close($statement);
+    mysqli_close($connection);
+    return $count;
+}

@@ -42,6 +42,26 @@ try {
     $databaseError = true;
 }
 
+$deleteReference = $filters['job_reference'];
+$deleteCount = null;
+$deleteError = '';
+if (isset($_GET['delete_job'])) {
+    $deleteInput = read_management_filters(['job_reference' => $_GET['delete_job']]);
+    $deleteReference = $deleteInput['filters']['job_reference'];
+    if ($deleteInput['errors']) {
+        $deleteError = implode(' ', $deleteInput['errors']);
+    } elseif ($deleteReference === '') {
+        $deleteError = 'Enter a job reference to preview deletion.';
+    } else {
+        try {
+            $deleteCount = count_eois_by_job($deleteReference);
+        } catch (mysqli_sql_exception $error) {
+            error_log('HR deletion preview: ' . $error->getMessage());
+            $deleteError = 'Deletion preview could not be loaded. Please try again later.';
+        }
+    }
+}
+
 $pageTitle = 'Finova Technologies | HR Management';
 $mainLabel = 'HR application management';
 include __DIR__ . '/header.inc';
@@ -101,6 +121,29 @@ include __DIR__ . '/nav.inc';
             </div>
         </fieldset>
     </form>
+
+    <section id="delete-applications" class="management-delete">
+        <h2>Delete applications by job reference</h2>
+        <p>Preview how many applications belong to a job before deleting them.</p>
+        <form action="manage.php#delete-applications" method="get" class="management-filters">
+            <?php foreach ($filters as $field => $value): ?>
+                <input type="hidden" name="<?php echo management_escape($field); ?>" value="<?php echo management_escape($value); ?>">
+            <?php endforeach; ?>
+            <input type="hidden" name="sort" value="<?php echo management_escape($sortField); ?>">
+            <label for="delete-job">Job reference to delete</label>
+            <input type="text" id="delete-job" name="delete_job" maxlength="6" required
+                value="<?php echo management_escape($deleteReference); ?>">
+            <button type="submit">Preview deletion</button>
+        </form>
+        <?php if ($deleteError !== ''): ?>
+            <p class="error-message" role="alert"><?php echo management_escape($deleteError); ?></p>
+        <?php elseif ($deleteCount !== null): ?>
+            <p><?php echo management_escape($deleteCount); ?> application(s) found for <?php echo management_escape($deleteReference); ?>.</p>
+            <?php if ($deleteCount == 0): ?>
+                <p>No matching applications to delete.</p>
+            <?php endif; ?>
+        <?php endif; ?>
+    </section>
 
     <h2><?php echo $hasFilters ? 'Filtered Expressions of Interest' : 'All Expressions of Interest'; ?></h2>
     <?php if ($filterErrors): ?>
