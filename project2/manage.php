@@ -175,6 +175,7 @@ include __DIR__ . '/nav.inc';
         <p><?php echo $hasFilters ? 'No applications match these filters.' : 'No applications have been submitted yet.'; ?></p>
     <?php else: ?>
         <p><?php echo count($applications); ?> application(s) found.</p>
+        <p class="management-scroll-hint">On small screens, scroll the table sideways to see all columns.</p>
         <div class="management-table-wrapper" role="region" aria-label="Application records" tabindex="0">
             <table class="management-table">
                 <caption>
