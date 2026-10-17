@@ -134,6 +134,8 @@ include __DIR__ . '/nav.inc';
 
             </table>
 
+            <p>For HR staff: <a href="login.php">Manage applications</a>.</p>
+
         </section>
 
 

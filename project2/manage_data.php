@@ -1,4 +1,13 @@
 <?php
+// Reuse the same local connection settings for all HR database operations.
+function management_database() {
+    require __DIR__ . '/settings.php';
+    mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+    $connection = mysqli_connect($host, $user, $pwd, $sql_db);
+    mysqli_set_charset($connection, 'utf8mb4');
+    return $connection;
+}
+
 // Read the three optional search fields and report basic input errors.
 function read_management_filters($input) {
     $fields = ['job_reference' => 'Job reference', 'first_name' => 'First name', 'last_name' => 'Last name'];
@@ -52,10 +61,7 @@ function load_eois($filters = [], $sortField = 'EOInumber') {
     } else {
         $orderBy = $sortField . ' ASC, EOInumber DESC';
     }
-    require __DIR__ . '/settings.php';
-    mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
-    $connection = mysqli_connect($host, $user, $pwd, $sql_db);
-    mysqli_set_charset($connection, 'utf8mb4');
+    $connection = management_database();
 
     $jobReference = $filters['job_reference'] ?? '';
     $firstName = $filters['first_name'] ?? '';
@@ -99,10 +105,7 @@ function load_eois($filters = [], $sortField = 'EOInumber') {
 
 // Update one application using a parameterized SQL statement.
 function change_eoi_status($eoiNumber, $status) {
-    require __DIR__ . '/settings.php';
-    mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
-    $connection = mysqli_connect($host, $user, $pwd, $sql_db);
-    mysqli_set_charset($connection, 'utf8mb4');
+    $connection = management_database();
     $statement = mysqli_prepare($connection, 'UPDATE eoi SET status = ? WHERE EOInumber = ?');
     mysqli_stmt_bind_param($statement, 'si', $status, $eoiNumber);
     mysqli_stmt_execute($statement);
@@ -125,4 +128,44 @@ function change_eoi_status($eoiNumber, $status) {
     }
     mysqli_close($connection);
     return $result;
+}
+
+// Count matching applications before asking the manager to confirm deletion.
+function count_eois_by_job($jobReference) {
+    $connection = management_database();
+    $statement = mysqli_prepare($connection, 'SELECT COUNT(*) FROM eoi WHERE job_reference = ?');
+    mysqli_stmt_bind_param($statement, 's', $jobReference);
+    mysqli_stmt_execute($statement);
+    mysqli_stmt_bind_result($statement, $count);
+    mysqli_stmt_fetch($statement);
+    mysqli_stmt_close($statement);
+    mysqli_close($connection);
+    return $count;
+}
+
+// Related skill selections are removed by the database's ON DELETE CASCADE.
+function delete_eois_by_job($jobReference) {
+    $connection = management_database();
+    $statement = mysqli_prepare($connection, 'DELETE FROM eoi WHERE job_reference = ?');
+    mysqli_stmt_bind_param($statement, 's', $jobReference);
+    mysqli_stmt_execute($statement);
+    $deleted = mysqli_stmt_affected_rows($statement);
+    mysqli_stmt_close($statement);
+    mysqli_close($connection);
+    return $deleted;
+}
+
+// Keep known filters and sorting when returning from a management operation.
+function management_return_url($input) {
+    global $managementSortFields;
+    $filterInput = read_management_filters($input);
+    $parameters = [];
+    if (!$filterInput['errors']) {
+        $parameters = $filterInput['filters'];
+    }
+    if (isset($input['sort']) && is_string($input['sort'])
+        && array_key_exists($input['sort'], $managementSortFields)) {
+        $parameters['sort'] = $input['sort'];
+    }
+    return 'manage.php?' . http_build_query($parameters);
 }

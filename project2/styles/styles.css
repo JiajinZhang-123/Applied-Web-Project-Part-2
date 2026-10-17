@@ -869,3 +869,36 @@ footer {
     display: block;
     margin-top: 0.4rem;
 }
+
+
+/* Keep row actions at the top when application details are expanded. */
+.management-table th,
+.management-table td {
+    vertical-align: top;
+}
+
+.management-delete {
+    padding: 1rem 0;
+    border-top: 1px solid #cbd5e1;
+    scroll-margin-top: 6rem;
+}
+
+.management-delete input[type="text"] {
+    max-width: 100%;
+    padding: 0.4rem;
+}
+
+.management-delete button {
+    margin: 0.5rem 0.5rem 0.5rem 0;
+    padding: 0.5rem;
+}
+
+.management-scroll-hint {
+    font-size: 0.9rem;
+}
+
+@media (max-width: 500px) {
+    .management-delete {
+        scroll-margin-top: 14rem;
+    }
+}
