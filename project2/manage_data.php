@@ -142,3 +142,18 @@ function count_eois_by_job($jobReference) {
     mysqli_close($connection);
     return $count;
 }
+
+// Related skill selections are removed by the database's ON DELETE CASCADE.
+function delete_eois_by_job($jobReference) {
+    require __DIR__ . '/settings.php';
+    mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+    $connection = mysqli_connect($host, $user, $pwd, $sql_db);
+    mysqli_set_charset($connection, 'utf8mb4');
+    $statement = mysqli_prepare($connection, 'DELETE FROM eoi WHERE job_reference = ?');
+    mysqli_stmt_bind_param($statement, 's', $jobReference);
+    mysqli_stmt_execute($statement);
+    $deleted = mysqli_stmt_affected_rows($statement);
+    mysqli_stmt_close($statement);
+    mysqli_close($connection);
+    return $deleted;
+}

@@ -139,6 +139,15 @@ include __DIR__ . '/nav.inc';
             <p class="error-message" role="alert"><?php echo management_escape($deleteError); ?></p>
         <?php elseif ($deleteCount !== null): ?>
             <p><?php echo management_escape($deleteCount); ?> application(s) found for <?php echo management_escape($deleteReference); ?>.</p>
+            <?php if ($deleteCount > 0): ?>
+                <p>This deletes all applications for this job and their selected skills. This cannot be undone.</p>
+                <form action="delete_eoi.php" method="post">
+                    <input type="hidden" name="delete_job" value="<?php echo management_escape($deleteReference); ?>">
+                    <input type="hidden" name="token" value="<?php echo management_escape($_SESSION['management_token']); ?>">
+                    <button type="submit" name="confirm_delete" value="1">Confirm deletion for <?php echo management_escape($deleteReference); ?></button>
+                    <a href="manage.php">Cancel</a>
+                </form>
+            <?php endif; ?>
             <?php if ($deleteCount == 0): ?>
                 <p>No matching applications to delete.</p>
             <?php endif; ?>
