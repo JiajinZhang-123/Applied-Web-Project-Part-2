@@ -5,12 +5,12 @@ require_once __DIR__ . '/auth.php';
 require_login();
 require_once __DIR__ . '/manage_data.php';
 
-// The hidden token ties a status update to this logged-in browser session.
+// The hidden token ties a management operation to this logged-in browser session.
 if (!isset($_SESSION['management_token'])) {
     $_SESSION['management_token'] = bin2hex(random_bytes(16));
 }
-$statusMessage = $_SESSION['status_message'] ?? '';
-unset($_SESSION['status_message']);
+$managementMessage = $_SESSION['management_message'] ?? '';
+unset($_SESSION['management_message']);
 
 function management_escape($value) {
     return htmlspecialchars((string) $value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
@@ -42,6 +42,7 @@ try {
     $databaseError = true;
 }
 
+$returnUrl = management_return_url($_GET);
 $deleteReference = $filters['job_reference'];
 $deleteCount = null;
 $deleteError = '';
@@ -75,8 +76,8 @@ include __DIR__ . '/nav.inc';
         <a href="logout.php">Log out</a>
     </p>
 
-    <?php if ($statusMessage !== ''): ?>
-        <p role="status"><?php echo management_escape($statusMessage); ?></p>
+    <?php if ($managementMessage !== ''): ?>
+        <p role="status"><?php echo management_escape($managementMessage); ?></p>
     <?php endif; ?>
 
     <form action="manage.php" method="get" class="management-filters">
@@ -144,8 +145,12 @@ include __DIR__ . '/nav.inc';
                 <form action="delete_eoi.php" method="post">
                     <input type="hidden" name="delete_job" value="<?php echo management_escape($deleteReference); ?>">
                     <input type="hidden" name="token" value="<?php echo management_escape($_SESSION['management_token']); ?>">
+                    <?php foreach ($filters as $field => $value): ?>
+                        <input type="hidden" name="<?php echo management_escape($field); ?>" value="<?php echo management_escape($value); ?>">
+                    <?php endforeach; ?>
+                    <input type="hidden" name="sort" value="<?php echo management_escape($sortField); ?>">
                     <button type="submit" name="confirm_delete" value="1">Confirm deletion for <?php echo management_escape($deleteReference); ?></button>
-                    <a href="manage.php">Cancel</a>
+                    <a href="<?php echo management_escape($returnUrl); ?>">Cancel</a>
                 </form>
             <?php endif; ?>
             <?php if ($deleteCount == 0): ?>

@@ -157,3 +157,18 @@ function delete_eois_by_job($jobReference) {
     mysqli_close($connection);
     return $deleted;
 }
+
+// Keep known filters and sorting when returning from a management operation.
+function management_return_url($input) {
+    global $managementSortFields;
+    $filterInput = read_management_filters($input);
+    $parameters = [];
+    if (!$filterInput['errors']) {
+        $parameters = $filterInput['filters'];
+    }
+    if (isset($input['sort']) && is_string($input['sort'])
+        && array_key_exists($input['sort'], $managementSortFields)) {
+        $parameters['sort'] = $input['sort'];
+    }
+    return 'manage.php?' . http_build_query($parameters);
+}
