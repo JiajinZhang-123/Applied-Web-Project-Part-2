@@ -46,12 +46,12 @@ foreach ($selectedSkills as $skill) {
 }
 $Skills = implode(", ", $cleanedSkills); // turns the array of skills into a comma-separated string.
 
+// The following code is assisted by AI.
+$errors = [];
+
 if (strlen($otherSkills) > 1000) {
     $errors[] = "Other skills must be under 1000 characters.";
 }
-
-// The following code is written by AI.
-$errors = [];
 
 if (!preg_match("/^[A-Za-z0-9]{6}$/", $jobReferenceNumber)) {
     $errors[] = "Job reference must be exactly 6 letters or numbers.";
@@ -115,8 +115,118 @@ if (count($cleanedSkills) === 0) {
 }
 
 
-$dbConnection = mysqli_connect($host, $user, $pwd, $sql_db)
+$dbConnection = mysqli_connect($host, $user, $pwd, $sql_db);
+
+if (empty($errors) && $dbConnection) {
+    $stmt = mysqli_prepare($dbConnection, "SELECT 1 FROM jobs WHERE job_reference = ?"); // sends a query. ? is substitued below
+
+    mysqli_stmt_bind_param($stmt, "s", $jobReferenceNumber); // defines jobReferenceNumber as a String, and then puts it into ?.
+
+    mysqli_stmt_execute($stmt); // Executes the query
+
+    mysqli_stmt_store_result($stmt); // This stores the result of the query in the statement object, allowing us to check the number of rows returned.
+
+    if (mysqli_stmt_num_rows($stmt) === 0) {
+        $errors[] = "That job reference number does not exist.";
+    }
+    mysqli_stmt_close($stmt);
+}
+
+if (!empty($errors)) {
+    if ($dbConnection) {
+        mysqli_close($dbConnection);
+    }
+
+    $pageTitle = 'Finova Technologies | Application Error';
+    $mainLabel = 'Application error';
+    include __DIR__ . '/header.inc';
+    include __DIR__ . '/nav.inc';
+    ?>
+    <section class="eoi-result">
+        <h1>Application could not be submitted</h1>
+        <ul>
+            <?php foreach ($errors as $error) { echo "<li>" . $error . "</li>"; } ?>
+        </ul>
+        <p><a href="apply.php">Go back to the form</a></p>
+    </section>
+    <?php
+    include __DIR__ . '/footer.inc';
+    exit;
+}
 
 
+mysqli_query($dbConnection, "CREATE TABLE IF NOT EXISTS eoi (
+  EOInumber INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  job_reference CHAR(6) NOT NULL,
+  first_name VARCHAR(20) NOT NULL,
+  last_name VARCHAR(20) NOT NULL,
+  date_of_birth DATE NOT NULL,
+  gender ENUM('Male','Female','Other') NOT NULL,
+  street_address VARCHAR(40) NOT NULL,
+  suburb_town VARCHAR(40) NOT NULL,
+  state ENUM('VIC','NSW','QLD','NT','WA','SA','TAS','ACT') NOT NULL,
+  postcode CHAR(4) NOT NULL,
+  email VARCHAR(254) NOT NULL,
+  phone VARCHAR(12) NOT NULL,
+  other_skills TEXT NULL,
+  status ENUM('New','Current','Final') NOT NULL DEFAULT 'New',
+  submitted_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (EOInumber),
+  KEY idx_eoi_job (job_reference),
+  KEY idx_eoi_first_last (first_name, last_name),
+  KEY idx_eoi_last (last_name),
+  KEY idx_eoi_status (status),
+  CONSTRAINT fk_eoi_job FOREIGN KEY (job_reference)
+    REFERENCES jobs (job_reference) ON DELETE RESTRICT
+) ENGINE=InnoDB");
 
+mysqli_query($dbConnection, "CREATE TABLE IF NOT EXISTS eoi_skills (
+  EOInumber INT UNSIGNED NOT NULL,
+  skill ENUM('Programming','Microsoft Excel','Leadership','Communication',
+    'Organisation','Problem Solving','Teamwork','Time Management') NOT NULL,
+  PRIMARY KEY (EOInumber, skill),
+  CONSTRAINT fk_eoi_skills_eoi FOREIGN KEY (EOInumber)
+    REFERENCES eoi (EOInumber) ON DELETE CASCADE
+) ENGINE=InnoDB");
+
+$stmt = mysqli_prepare($dbConnection,
+    "INSERT INTO eoi (job_reference, first_name, last_name, date_of_birth, gender,
+        street_address, suburb_town, state, postcode, email, phone, other_skills)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+mysqli_stmt_bind_param($stmt, "ssssssssssss",
+    $jobReferenceNumber, $firstName, $lastName, $dobSql, $Gender,
+    $streetAddress, $suburbTown, $State, $Postcode, $email, $phone, $otherSkills);
+$success = mysqli_stmt_execute($stmt);
+$eoiNumber = mysqli_insert_id($dbConnection); // the auto-generated EOInumber
+mysqli_stmt_close($stmt);
+
+// Save each ticked skill as its own row in eoi_skills.
+if ($success) {
+    foreach ($cleanedSkills as $skill) {
+        $skillStmt = mysqli_prepare($dbConnection, "INSERT INTO eoi_skills (EOInumber, skill) VALUES (?, ?)");
+        mysqli_stmt_bind_param($skillStmt, "is", $eoiNumber, $skill);
+        mysqli_stmt_execute($skillStmt);
+        mysqli_stmt_close($skillStmt);
+    }
+}
+
+mysqli_close($dbConnection);
+
+$pageTitle = 'Finova Technologies | Application Submitted';
+$mainLabel = 'Application confirmation';
+include __DIR__ . '/header.inc';
+include __DIR__ . '/nav.inc';
+?>
+<section class="eoi-result">
+    <?php if ($success) { ?>
+        <h1>Thank you, <?php echo $firstName; ?>!</h1>
+        <p>Your application has been received.</p>
+        <p><strong>Your EOI number is: <?php echo $eoiNumber; ?></strong></p>
+    <?php } else { ?>
+        <h1>Something went wrong</h1>
+        <p>We couldn't save your application. Please try again.</p>
+    <?php } ?>
+    <p><a href="index.php">Back to home</a></p>
+</section>
+<?php include __DIR__ . '/footer.inc';
 ?>
