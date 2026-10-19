@@ -65,6 +65,7 @@ if (isset($_GET['delete_job'])) {
 
 $pageTitle = 'Finova Technologies | HR Management';
 $mainLabel = 'HR application management';
+$showHrLogout = true;
 include __DIR__ . '/header.inc';
 include __DIR__ . '/nav.inc';
 ?>
@@ -72,9 +73,6 @@ include __DIR__ . '/nav.inc';
 <section class="management-section">
     <h1>HR Application Management</h1>
     <p>Review expressions of interest submitted to Finova Technologies.</p>
-    <p>Signed in as <?php echo management_escape($_SESSION['user']); ?>.
-        <a href="logout.php">Log out</a>
-    </p>
 
     <?php if ($managementMessage !== ''): ?>
         <p role="status"><?php echo management_escape($managementMessage); ?></p>
