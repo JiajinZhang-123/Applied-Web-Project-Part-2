@@ -222,7 +222,7 @@ nav a:focus {
 
 
 footer {
-    background-color: #111827;
+    background: linear-gradient(135deg, #0f172a, #1e3a8a);
     color: white;
 }
 
