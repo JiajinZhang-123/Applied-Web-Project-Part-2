@@ -36,7 +36,7 @@ include __DIR__ . '/nav.inc';
 
     <h2>Available Jobs</h2>
     <a href="search.php" class="search-jobs-link">
-        Search Jobs:
+        Search Jobs
     </a>
     
 </section>
