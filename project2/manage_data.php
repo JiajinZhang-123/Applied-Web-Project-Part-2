@@ -111,36 +111,8 @@ function change_eoi_status($eoiNumber, $status) {
     mysqli_stmt_execute($statement);
     $changed = mysqli_stmt_affected_rows($statement);
     mysqli_stmt_close($statement);
-    if ($changed > 0) {
-        $result = 'updated';
-    } else {
-        // Zero changed rows can mean either the same status or a missing EOI.
-        $statement = mysqli_prepare($connection, 'SELECT EOInumber FROM eoi WHERE EOInumber = ?');
-        mysqli_stmt_bind_param($statement, 'i', $eoiNumber);
-        mysqli_stmt_execute($statement);
-        mysqli_stmt_store_result($statement);
-        if (mysqli_stmt_num_rows($statement) > 0) {
-            $result = 'unchanged';
-        } else {
-            $result = 'not_found';
-        }
-        mysqli_stmt_close($statement);
-    }
     mysqli_close($connection);
-    return $result;
-}
-
-// Count matching applications before asking the manager to confirm deletion.
-function count_eois_by_job($jobReference) {
-    $connection = management_database();
-    $statement = mysqli_prepare($connection, 'SELECT COUNT(*) FROM eoi WHERE job_reference = ?');
-    mysqli_stmt_bind_param($statement, 's', $jobReference);
-    mysqli_stmt_execute($statement);
-    mysqli_stmt_bind_result($statement, $count);
-    mysqli_stmt_fetch($statement);
-    mysqli_stmt_close($statement);
-    mysqli_close($connection);
-    return $count;
+    return $changed;
 }
 
 // Related skill selections are removed by the database's ON DELETE CASCADE.
@@ -153,19 +125,4 @@ function delete_eois_by_job($jobReference) {
     mysqli_stmt_close($statement);
     mysqli_close($connection);
     return $deleted;
-}
-
-// Keep known filters and sorting when returning from a management operation.
-function management_return_url($input) {
-    global $managementSortFields;
-    $filterInput = read_management_filters($input);
-    $parameters = [];
-    if (!$filterInput['errors']) {
-        $parameters = $filterInput['filters'];
-    }
-    if (isset($input['sort']) && is_string($input['sort'])
-        && array_key_exists($input['sort'], $managementSortFields)) {
-        $parameters['sort'] = $input['sort'];
-    }
-    return 'manage.php?' . http_build_query($parameters);
 }

@@ -8,8 +8,6 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-$returnUrl = management_return_url($_POST);
-
 $deleteInput = read_management_filters(['job_reference' => $_POST['delete_job'] ?? '']);
 $jobReference = $deleteInput['filters']['job_reference'];
 $token = $_POST['token'] ?? '';
@@ -28,10 +26,9 @@ if (!is_string($token) || !isset($_SESSION['management_token'])
             $_SESSION['management_message'] = 'No matching applications to delete for ' . $jobReference . '.';
         }
     } catch (mysqli_sql_exception $error) {
-        error_log('HR deletion: ' . $error->getMessage());
         $_SESSION['management_message'] = 'Applications could not be deleted. Please try again later.';
     }
 }
 
-header('Location: ' . $returnUrl, true, 303);
+header('Location: manage.php', true, 303);
 exit;

@@ -22,9 +22,6 @@ $filterErrors = $filterInput['errors'];
 if ($filterErrors) {
     http_response_code(400);
 }
-$hasFilters = $filters['job_reference'] !== ''
-    || $filters['first_name'] !== '' || $filters['last_name'] !== '';
-
 $sortField = 'EOInumber';
 if (isset($_GET['sort']) && is_string($_GET['sort'])
     && array_key_exists($_GET['sort'], $managementSortFields)) {
@@ -38,29 +35,7 @@ try {
         $applications = load_eois($filters, $sortField);
     }
 } catch (mysqli_sql_exception $error) {
-    error_log('HR application list: ' . $error->getMessage());
     $databaseError = true;
-}
-
-$returnUrl = management_return_url($_GET);
-$deleteReference = $filters['job_reference'];
-$deleteCount = null;
-$deleteError = '';
-if (isset($_GET['delete_job'])) {
-    $deleteInput = read_management_filters(['job_reference' => $_GET['delete_job']]);
-    $deleteReference = $deleteInput['filters']['job_reference'];
-    if ($deleteInput['errors']) {
-        $deleteError = implode(' ', $deleteInput['errors']);
-    } elseif ($deleteReference === '') {
-        $deleteError = 'Enter a job reference to preview deletion.';
-    } else {
-        try {
-            $deleteCount = count_eois_by_job($deleteReference);
-        } catch (mysqli_sql_exception $error) {
-            error_log('HR deletion preview: ' . $error->getMessage());
-            $deleteError = 'Deletion preview could not be loaded. Please try again later.';
-        }
-    }
 }
 
 $pageTitle = 'Finova Technologies | HR Management';
@@ -123,41 +98,22 @@ include __DIR__ . '/nav.inc';
 
     <section id="delete-applications" class="management-delete">
         <h2>Delete applications by job reference</h2>
-        <p>Preview how many applications belong to a job before deleting them.</p>
-        <form action="manage.php#delete-applications" method="get" class="management-filters">
-            <?php foreach ($filters as $field => $value): ?>
-                <input type="hidden" name="<?php echo management_escape($field); ?>" value="<?php echo management_escape($value); ?>">
-            <?php endforeach; ?>
-            <input type="hidden" name="sort" value="<?php echo management_escape($sortField); ?>">
+        <p>This deletes all applications for the given job, including their selected skills.</p>
+        <form action="delete_eoi.php" method="post" class="management-filters">
+            <input type="hidden" name="token" value="<?php echo management_escape($_SESSION['management_token']); ?>">
             <label for="delete-job">Job reference to delete</label>
-            <input type="text" id="delete-job" name="delete_job" maxlength="6" required
-                value="<?php echo management_escape($deleteReference); ?>">
-            <button type="submit">Preview deletion</button>
+            <input type="text" id="delete-job" name="delete_job" maxlength="6" required>
+            <p>
+                <label>
+                    <input type="checkbox" name="confirm_delete" value="1" required>
+                    I confirm the deletion and understand it cannot be undone.
+                </label>
+            </p>
+            <button type="submit">Delete applications</button>
         </form>
-        <?php if ($deleteError !== ''): ?>
-            <p class="error-message" role="alert"><?php echo management_escape($deleteError); ?></p>
-        <?php elseif ($deleteCount !== null): ?>
-            <p><?php echo management_escape($deleteCount); ?> application(s) found for <?php echo management_escape($deleteReference); ?>.</p>
-            <?php if ($deleteCount > 0): ?>
-                <p>This deletes all applications for this job and their selected skills. This cannot be undone.</p>
-                <form action="delete_eoi.php" method="post">
-                    <input type="hidden" name="delete_job" value="<?php echo management_escape($deleteReference); ?>">
-                    <input type="hidden" name="token" value="<?php echo management_escape($_SESSION['management_token']); ?>">
-                    <?php foreach ($filters as $field => $value): ?>
-                        <input type="hidden" name="<?php echo management_escape($field); ?>" value="<?php echo management_escape($value); ?>">
-                    <?php endforeach; ?>
-                    <input type="hidden" name="sort" value="<?php echo management_escape($sortField); ?>">
-                    <button type="submit" name="confirm_delete" value="1">Confirm deletion for <?php echo management_escape($deleteReference); ?></button>
-                    <a href="<?php echo management_escape($returnUrl); ?>">Cancel</a>
-                </form>
-            <?php endif; ?>
-            <?php if ($deleteCount == 0): ?>
-                <p>No matching applications to delete.</p>
-            <?php endif; ?>
-        <?php endif; ?>
     </section>
 
-    <h2><?php echo $hasFilters ? 'Filtered Expressions of Interest' : 'All Expressions of Interest'; ?></h2>
+    <h2>Applications</h2>
     <?php if ($filterErrors): ?>
         <div class="error-message" role="alert">
             <p>Please correct the filters. No search was performed.</p>
@@ -170,7 +126,7 @@ include __DIR__ . '/nav.inc';
     <?php elseif ($databaseError): ?>
         <p class="error-message" role="alert">Applications could not be loaded. Please try again later.</p>
     <?php elseif (!$applications): ?>
-        <p><?php echo $hasFilters ? 'No applications match these filters.' : 'No applications have been submitted yet.'; ?></p>
+        <p>No applications found.</p>
     <?php else: ?>
         <p><?php echo count($applications); ?> application(s) found.</p>
         <p class="management-scroll-hint">On small screens, scroll the table sideways to see all columns.</p>
@@ -204,10 +160,6 @@ include __DIR__ . '/nav.inc';
                                 <form action="update_status.php" method="post" class="management-status-form">
                                     <input type="hidden" name="EOInumber" value="<?php echo management_escape($application['EOInumber']); ?>">
                                     <input type="hidden" name="token" value="<?php echo management_escape($_SESSION['management_token']); ?>">
-                                    <?php foreach ($filters as $field => $value): ?>
-                                        <input type="hidden" name="<?php echo management_escape($field); ?>" value="<?php echo management_escape($value); ?>">
-                                    <?php endforeach; ?>
-                                    <input type="hidden" name="sort" value="<?php echo management_escape($sortField); ?>">
                                     <label for="status-<?php echo management_escape($application['EOInumber']); ?>">Status</label>
                                     <select id="status-<?php echo management_escape($application['EOInumber']); ?>" name="status">
                                         <?php foreach ($managementStatuses as $status): ?>
