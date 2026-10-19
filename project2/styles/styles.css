@@ -39,6 +39,31 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 1.5rem;
+}
+
+.site-header nav {
+    margin-left: auto;
+}
+
+.hr-login {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    background: linear-gradient(135deg, #0f172a, #1e3a8a);
+    color: white;
+    border-radius: 0.4rem;
+    font-weight: bold;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.hr-login:hover {
+    background: #1e40af;
+}
+
+.hr-login:focus-visible {
+    outline: 3px solid #60a5fa;
+    outline-offset: 3px;
 }
 
 .logo {
@@ -215,8 +240,25 @@ footer {
 @media (max-width: 800px) {
 
     .site-header {
-        flex-direction: column;
+        flex-wrap: wrap;
         gap: 1rem;
+    }
+
+    .site-header nav {
+        order: 3;
+        flex-basis: 100%;
+        margin-left: 0;
+    }
+
+    .site-header nav ul {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.75rem 1.5rem;
+    }
+
+    .hr-login {
+        margin-left: auto;
     }
 
     .service-list {

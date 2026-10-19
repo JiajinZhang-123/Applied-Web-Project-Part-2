@@ -8,6 +8,8 @@
                 </ul>
             </nav>
 
+            <a href="login.php" class="hr-login">HR Login</a>
+
         </div>
     </header>
 
