@@ -8,32 +8,18 @@ function management_database() {
     return $connection;
 }
 
-// Read the three optional search fields and report basic input errors.
+// Read optional search values; a value with no matching record returns no results.
 function read_management_filters($input) {
-    $fields = ['job_reference' => 'Job reference', 'first_name' => 'First name', 'last_name' => 'Last name'];
     $filters = [];
-    $errors = [];
-    foreach ($fields as $field => $label) {
+    foreach (['job_reference', 'first_name', 'last_name'] as $field) {
+        $value = $input[$field] ?? '';
         $filters[$field] = '';
-        if (!isset($input[$field])) {
-            continue;
+        if (is_string($value)) {
+            $filters[$field] = trim($value);
         }
-        if (!is_string($input[$field])) {
-            $errors[] = $label . ' must be a single text value.';
-            continue;
-        }
-        $value = trim($input[$field]);
-        if ($field === 'job_reference') {
-            $value = strtoupper($value);
-            if ($value !== '' && !preg_match('/^[A-Z0-9]{6}$/', $value)) {
-                $errors[] = 'Job reference must contain 6 letters or digits.';
-            }
-        } elseif (mb_strlen($value, 'UTF-8') > 20) {
-            $errors[] = $label . ' must contain no more than 20 characters.';
-        }
-        $filters[$field] = $value;
     }
-    return ['filters' => $filters, 'errors' => $errors];
+    $filters['job_reference'] = strtoupper($filters['job_reference']);
+    return $filters;
 }
 
 $managementStatuses = ['New', 'Current', 'Final'];

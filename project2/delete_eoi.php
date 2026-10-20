@@ -8,14 +8,14 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-$deleteInput = read_management_filters(['job_reference' => $_POST['delete_job'] ?? '']);
-$jobReference = $deleteInput['filters']['job_reference'];
+$deleteFilters = read_management_filters(['job_reference' => $_POST['delete_job'] ?? '']);
+$jobReference = $deleteFilters['job_reference'];
 $token = $_POST['token'] ?? '';
 
 if (!is_string($token) || !isset($_SESSION['management_token'])
     || !hash_equals($_SESSION['management_token'], $token)) {
     $_SESSION['management_message'] = 'The form has expired. Please try again.';
-} elseif ($deleteInput['errors'] || $jobReference === '' || ($_POST['confirm_delete'] ?? '') !== '1') {
+} elseif (!preg_match('/^[A-Z0-9]{6}$/', $jobReference) || ($_POST['confirm_delete'] ?? '') !== '1') {
     $_SESSION['management_message'] = 'Enter a valid job reference and confirm the deletion.';
 } else {
     try {

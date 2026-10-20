@@ -16,12 +16,7 @@ function management_escape($value) {
     return htmlspecialchars((string) $value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 }
 
-$filterInput = read_management_filters($_GET);
-$filters = $filterInput['filters'];
-$filterErrors = $filterInput['errors'];
-if ($filterErrors) {
-    http_response_code(400);
-}
+$filters = read_management_filters($_GET);
 $sortField = 'EOInumber';
 if (isset($_GET['sort']) && is_string($_GET['sort'])
     && array_key_exists($_GET['sort'], $managementSortFields)) {
@@ -31,9 +26,7 @@ if (isset($_GET['sort']) && is_string($_GET['sort'])
 $applications = [];
 $databaseError = false;
 try {
-    if (!$filterErrors) {
-        $applications = load_eois($filters, $sortField);
-    }
+    $applications = load_eois($filters, $sortField);
 } catch (mysqli_sql_exception $error) {
     $databaseError = true;
 }
@@ -114,16 +107,7 @@ include __DIR__ . '/nav.inc';
     </section>
 
     <h2>Applications</h2>
-    <?php if ($filterErrors): ?>
-        <div class="error-message" role="alert">
-            <p>Please correct the filters. No search was performed.</p>
-            <ul>
-                <?php foreach ($filterErrors as $message): ?>
-                    <li><?php echo management_escape($message); ?></li>
-                <?php endforeach; ?>
-            </ul>
-        </div>
-    <?php elseif ($databaseError): ?>
+    <?php if ($databaseError): ?>
         <p class="error-message" role="alert">Applications could not be loaded. Please try again later.</p>
     <?php elseif (!$applications): ?>
         <p>No applications found.</p>
