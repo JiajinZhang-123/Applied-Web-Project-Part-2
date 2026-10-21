@@ -8,32 +8,18 @@ function management_database() {
     return $connection;
 }
 
-// Read the three optional search fields and report basic input errors.
+// Read optional search values; a value with no matching record returns no results.
 function read_management_filters($input) {
-    $fields = ['job_reference' => 'Job reference', 'first_name' => 'First name', 'last_name' => 'Last name'];
     $filters = [];
-    $errors = [];
-    foreach ($fields as $field => $label) {
+    foreach (['job_reference', 'first_name', 'last_name'] as $field) {
+        $value = $input[$field] ?? '';
         $filters[$field] = '';
-        if (!isset($input[$field])) {
-            continue;
+        if (is_string($value)) {
+            $filters[$field] = trim($value);
         }
-        if (!is_string($input[$field])) {
-            $errors[] = $label . ' must be a single text value.';
-            continue;
-        }
-        $value = trim($input[$field]);
-        if ($field === 'job_reference') {
-            $value = strtoupper($value);
-            if ($value !== '' && !preg_match('/^[A-Z0-9]{6}$/', $value)) {
-                $errors[] = 'Job reference must contain 6 letters or digits.';
-            }
-        } elseif (mb_strlen($value, 'UTF-8') > 20) {
-            $errors[] = $label . ' must contain no more than 20 characters.';
-        }
-        $filters[$field] = $value;
     }
-    return ['filters' => $filters, 'errors' => $errors];
+    $filters['job_reference'] = strtoupper($filters['job_reference']);
+    return $filters;
 }
 
 $managementStatuses = ['New', 'Current', 'Final'];
@@ -111,36 +97,8 @@ function change_eoi_status($eoiNumber, $status) {
     mysqli_stmt_execute($statement);
     $changed = mysqli_stmt_affected_rows($statement);
     mysqli_stmt_close($statement);
-    if ($changed > 0) {
-        $result = 'updated';
-    } else {
-        // Zero changed rows can mean either the same status or a missing EOI.
-        $statement = mysqli_prepare($connection, 'SELECT EOInumber FROM eoi WHERE EOInumber = ?');
-        mysqli_stmt_bind_param($statement, 'i', $eoiNumber);
-        mysqli_stmt_execute($statement);
-        mysqli_stmt_store_result($statement);
-        if (mysqli_stmt_num_rows($statement) > 0) {
-            $result = 'unchanged';
-        } else {
-            $result = 'not_found';
-        }
-        mysqli_stmt_close($statement);
-    }
     mysqli_close($connection);
-    return $result;
-}
-
-// Count matching applications before asking the manager to confirm deletion.
-function count_eois_by_job($jobReference) {
-    $connection = management_database();
-    $statement = mysqli_prepare($connection, 'SELECT COUNT(*) FROM eoi WHERE job_reference = ?');
-    mysqli_stmt_bind_param($statement, 's', $jobReference);
-    mysqli_stmt_execute($statement);
-    mysqli_stmt_bind_result($statement, $count);
-    mysqli_stmt_fetch($statement);
-    mysqli_stmt_close($statement);
-    mysqli_close($connection);
-    return $count;
+    return $changed;
 }
 
 // Related skill selections are removed by the database's ON DELETE CASCADE.
@@ -153,19 +111,4 @@ function delete_eois_by_job($jobReference) {
     mysqli_stmt_close($statement);
     mysqli_close($connection);
     return $deleted;
-}
-
-// Keep known filters and sorting when returning from a management operation.
-function management_return_url($input) {
-    global $managementSortFields;
-    $filterInput = read_management_filters($input);
-    $parameters = [];
-    if (!$filterInput['errors']) {
-        $parameters = $filterInput['filters'];
-    }
-    if (isset($input['sort']) && is_string($input['sort'])
-        && array_key_exists($input['sort'], $managementSortFields)) {
-        $parameters['sort'] = $input['sort'];
-    }
-    return 'manage.php?' . http_build_query($parameters);
 }
