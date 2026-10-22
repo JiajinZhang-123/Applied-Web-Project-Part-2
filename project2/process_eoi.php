@@ -189,6 +189,10 @@ mysqli_query($dbConnection, "CREATE TABLE IF NOT EXISTS eoi_skills (
     REFERENCES eoi (EOInumber) ON DELETE CASCADE
 ) ENGINE=InnoDB");
 
+// Insert the EOI and its skills in one transaction, so a failure does not
+// leave an application record without its selected skills.
+mysqli_begin_transaction($dbConnection);
+
 $stmt = mysqli_prepare($dbConnection,
     "INSERT INTO eoi (job_reference, first_name, last_name, date_of_birth, gender,
         street_address, suburb_town, state, postcode, email, phone, other_skills)
@@ -205,9 +209,18 @@ if ($success) {
     foreach ($cleanedSkills as $skill) {
         $skillStmt = mysqli_prepare($dbConnection, "INSERT INTO eoi_skills (EOInumber, skill) VALUES (?, ?)");
         mysqli_stmt_bind_param($skillStmt, "is", $eoiNumber, $skill);
-        mysqli_stmt_execute($skillStmt);
+        if (!mysqli_stmt_execute($skillStmt)) {
+            $success = false;
+            break;
+        }
         mysqli_stmt_close($skillStmt);
     }
+}
+
+if ($success) {
+    mysqli_commit($dbConnection);
+} else {
+    mysqli_rollback($dbConnection);
 }
 
 mysqli_close($dbConnection);
