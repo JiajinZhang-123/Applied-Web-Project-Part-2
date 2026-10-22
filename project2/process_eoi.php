@@ -73,6 +73,12 @@ if (!preg_match("/^(\d{2})\/(\d{2})\/(\d{4})$/", $dateOfBirth, $m)) {
 } else {
     $dobDate = DateTime::createFromFormat("d/m/Y", $dateOfBirth);
     $dobSql = $dobDate->format("Y-m-d"); // MySQL DATE format
+
+    // Applicants must be at least 15 years old.
+    $minDob = (new DateTime('now'))->sub(new DateInterval('P15Y'));
+    if ($dobDate > $minDob) {
+        $errors[] = "Applicants must be at least 15 years old.";
+    }
 }
 
 // Gender: must be one of the three form values

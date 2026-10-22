@@ -1,6 +1,6 @@
 <?php
-require_once 'auth.php';
-require_once 'settings.php';
+require_once __DIR__ . '/auth.php';
+require_once __DIR__ . '/settings.php';
 
 //Only POST submissions are accepted; direct access will redirect to the login page
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {

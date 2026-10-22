@@ -1,5 +1,5 @@
 <?php
-require_once 'auth.php';
+require_once __DIR__ . '/auth.php';
 // Display the HR Login Form
 
 if (is_logged_in()) {
@@ -9,8 +9,8 @@ if (is_logged_in()) {
 
 $pageTitle = 'Finova Technologies | HR Login';
 $mainLabel = 'HR login';
-include 'header.inc';
-include 'nav.inc';
+include __DIR__ . '/header.inc';
+include __DIR__ . '/nav.inc';
 ?>
 
     <section class="login-section">
@@ -39,4 +39,4 @@ include 'nav.inc';
         </form>
     </section>
 
-<?php include 'footer.inc'; ?>
+<?php include __DIR__ . '/footer.inc'; ?>
