@@ -22,6 +22,31 @@ function sanityCheck($data) {
     return $data;
 }
 
+// Check that a postcode falls inside the ranges used by the selected state.
+function postcode_matches_state($postcode, $state) {
+    $ranges = [
+        'VIC' => ['3000-3999', '8000-8999'],
+        'NSW' => ['2000-2599', '1000-1999'],
+        'QLD' => ['4000-4999', '9000-9999'],
+        'ACT' => ['0200-0299', '2600-2619'],
+        'SA'  => ['5000-5999'],
+        'WA'  => ['6000-6799'],
+        'TAS' => ['7000-7999'],
+        'NT'  => ['0800-0899'],
+    ];
+    if (!isset($ranges[$state])) {
+        return false;
+    }
+    $postcodeNum = (int) $postcode;
+    foreach ($ranges[$state] as $range) {
+        [$low, $high] = explode('-', $range);
+        if ($postcodeNum >= (int) $low && $postcodeNum <= (int) $high) {
+            return true;
+        }
+    }
+    return false;
+}
+
 $jobReferenceNumber = sanityCheck($_POST["jobReferenceNumber"]);
 $firstName = sanityCheck($_POST["firstName"]);
 $lastName = sanityCheck($_POST["lastName"]);
@@ -101,6 +126,8 @@ if (!in_array($State, $validStates, true)) {
 
 if (!preg_match("/^\d{4}$/", $Postcode)) {
     $errors[] = "Postcode must be exactly 4 digits.";
+} elseif (!postcode_matches_state($Postcode, $State)) {
+    $errors[] = "The postcode does not match the selected state.";
 }
 
 // Email: must pass PHP's check AND have a domain ending (blocks "rahul@raghavan")
