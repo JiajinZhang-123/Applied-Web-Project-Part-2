@@ -8,6 +8,12 @@
                 </ul>
             </nav>
 
+            <?php if (!empty($showHrLogout)): ?>
+                <a href="logout.php" class="hr-login">HR Logout</a>
+            <?php else: ?>
+                <a href="login.php" class="hr-login">HR Login</a>
+            <?php endif; ?>
+
         </div>
     </header>
 

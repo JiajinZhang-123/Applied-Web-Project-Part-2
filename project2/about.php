@@ -1,14 +1,14 @@
 <?php
 
-require_once 'settings.php';
+require_once __DIR__ . '/settings.php';
 
 // connect databse
 $dbconn = mysqli_connect($host, $user, $pwd, $sql_db);
 
 $pageTitle = 'Finova Technologies | About the Team';
 $mainLabel = 'About the team';
-include 'header.inc';
-include 'nav.inc';
+include __DIR__ . '/header.inc';
+include __DIR__ . '/nav.inc';
 
 if (!$dbconn) {
     echo '<p class="error-message">Unable to connect to the database.</p>';
@@ -239,5 +239,5 @@ mysqli_set_charset($dbconn, 'utf8mb4');
 
 <?php
 mysqli_close($dbconn);
-include 'footer.inc';
+include __DIR__ . '/footer.inc';
 ?>

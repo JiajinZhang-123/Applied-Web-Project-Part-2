@@ -23,6 +23,31 @@ function sanityCheck($data) {
     return $data;
 }
 
+// Check that a postcode falls inside the ranges used by the selected state.
+function postcode_matches_state($postcode, $state) {
+    $ranges = [
+        'VIC' => ['3000-3999', '8000-8999'],
+        'NSW' => ['2000-2599', '1000-1999'],
+        'QLD' => ['4000-4999', '9000-9999'],
+        'ACT' => ['0200-0299', '2600-2619'],
+        'SA'  => ['5000-5999'],
+        'WA'  => ['6000-6799'],
+        'TAS' => ['7000-7999'],
+        'NT'  => ['0800-0899'],
+    ];
+    if (!isset($ranges[$state])) {
+        return false;
+    }
+    $postcodeNum = (int) $postcode;
+    foreach ($ranges[$state] as $range) {
+        [$low, $high] = explode('-', $range);
+        if ($postcodeNum >= (int) $low && $postcodeNum <= (int) $high) {
+            return true;
+        }
+    }
+    return false;
+}
+
 $jobReferenceNumber = sanityCheck($_POST["jobReferenceNumber"]);
 $firstName = sanityCheck($_POST["firstName"]);
 $lastName = sanityCheck($_POST["lastName"]);
@@ -72,7 +97,13 @@ if (!preg_match("/^(\d{2})\/(\d{2})\/(\d{4})$/", $dateOfBirth, $m)) {
     $errors[] = "Date of birth is not a valid date.";
 } else {
     $dobDate = DateTime::createFromFormat("d/m/Y", $dateOfBirth);
-    $dobSql = $dobDate->format("Y-m-d");
+    $dobSql = $dobDate->format("Y-m-d"); // MySQL DATE format
+
+    // Applicants must be at least 15 years old.
+    $minDob = (new DateTime('now'))->sub(new DateInterval('P15Y'));
+    if ($dobDate > $minDob) {
+        $errors[] = "Applicants must be at least 15 years old.";
+    }
 }
 
 if (!in_array($Gender, ["Male", "Female", "Other"], true)) {
@@ -93,6 +124,8 @@ if (!in_array($State, $validStates, true)) {
 
 if (!preg_match("/^\d{4}$/", $Postcode)) {
     $errors[] = "Postcode must be exactly 4 digits.";
+} elseif (!postcode_matches_state($Postcode, $State)) {
+    $errors[] = "The postcode does not match the selected state.";
 }
 
 $emailRaw = trim($_POST["email"]);
@@ -183,7 +216,11 @@ mysqli_query($dbConnection, "CREATE TABLE IF NOT EXISTS eoi_skills (
   CONSTRAINT fk_eoi_skills_eoi FOREIGN KEY (EOInumber)
     REFERENCES eoi (EOInumber) ON DELETE CASCADE
 ) ENGINE=InnoDB");
-// Done with AI assistance
+
+// Insert the EOI and its skills in one transaction, so a failure does not
+// leave an application record without its selected skills.
+mysqli_begin_transaction($dbConnection);
+
 $stmt = mysqli_prepare($dbConnection,
     "INSERT INTO eoi (job_reference, first_name, last_name, date_of_birth, gender,
         street_address, suburb_town, state, postcode, email, phone, other_skills)
@@ -200,9 +237,18 @@ if ($success) {
     foreach ($cleanedSkills as $skill) {
         $skillStmt = mysqli_prepare($dbConnection, "INSERT INTO eoi_skills (EOInumber, skill) VALUES (?, ?)");
         mysqli_stmt_bind_param($skillStmt, "is", $eoiNumber, $skill);
-        mysqli_stmt_execute($skillStmt);
+        if (!mysqli_stmt_execute($skillStmt)) {
+            $success = false;
+            break;
+        }
         mysqli_stmt_close($skillStmt);
     }
+}
+
+if ($success) {
+    mysqli_commit($dbConnection);
+} else {
+    mysqli_rollback($dbConnection);
 }
 
 mysqli_close($dbConnection);
