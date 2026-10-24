@@ -24,6 +24,7 @@ function sanityCheck($data) {
 }
 
 // Check that a postcode falls inside the ranges used by the selected state.
+//Done with AI Assistance
 function postcode_matches_state($postcode, $state) {
     $ranges = [
         'VIC' => ['3000-3999', '8000-8999'],
