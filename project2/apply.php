@@ -113,33 +113,33 @@ include __DIR__ . '/nav.inc';
                     <legend><strong>Relevant Skills</strong></legend>
 
                       <div class="skillList" role="group" aria-label="Relevant skills">
-                        <p class="infoTitle"> <label>Select the skills that apply to you (at least one): <span class="required" aria-hidden="true">*</span></label></p>
+                        <p class="infoTitle"> <label>Select the skills that apply to you: <span class="required" aria-hidden="true">*</span></label></p>
                         <div class="nameInputs">
 
-                            <input type="checkbox" id="Programming" name="skills[]" value="Programming">
+                            <input type="checkbox" id="Programming" name="skills[]" value="Programming" required="required">
                             <label for="Programming" class="relevantSkills">Programming</label>
 
-                            <input type="checkbox" id="MicrosoftExcel" name="skills[]" value="Microsoft Excel">
+                            <input type="checkbox" id="MicrosoftExcel" name="skills[]" value="Microsoft Excel" required="required">
                             <label for="MicrosoftExcel" class="relevantSkills">Understanding of Microsoft Excel</label>
                             
-                            <input type="checkbox" id="Leadership" name="skills[]" value="Leadership">
+                            <input type="checkbox" id="Leadership" name="skills[]" value="Leadership" required="required">
                             <label for="Leadership" class="relevantSkills">Leadership</label>
                             
-                            <input type="checkbox" id="Communication" name="skills[]" value="Communication">
+                            <input type="checkbox" id="Communication" name="skills[]" value="Communication" required="required">
                             <label for="Communication" class="relevantSkills">Communication</label>
                               
                         </div>
                         <div class="nameInputs">
-                                <input type="checkbox" id="Organisation" name="skills[]" value="Organisation">
+                                <input type="checkbox" id="Organisation" name="skills[]" value="Organisation" required="required">
                                 <label for="Organisation" class="relevantSkills">Organisation</label>
 
-                                <input type="checkbox" id="ProblemSolving" name="skills[]" value="Problem Solving">
+                                <input type="checkbox" id="ProblemSolving" name="skills[]" value="Problem Solving" required="required">
                                 <label for="ProblemSolving" class="relevantSkills">Problem Solving</label>
 
-                                <input type="checkbox" id="Teamwork" name="skills[]" value="Teamwork">
+                                <input type="checkbox" id="Teamwork" name="skills[]" value="Teamwork" required="required">
                                 <label for="Teamwork" class="relevantSkills">Teamwork</label>
 
-                                <input type="checkbox" id="TimeManagement" name="skills[]" value="Time Management">
+                                <input type="checkbox" id="TimeManagement" name="skills[]" value="Time Management" required="required">
                                 <label for="TimeManagement" class="relevantSkills">Time Management</label>
                         </div>
                     </div>
