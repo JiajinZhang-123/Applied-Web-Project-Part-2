@@ -3,6 +3,7 @@ require_once __DIR__ . '/settings.php';
 
 $required = ["jobReferenceNumber", "firstName", "lastName", "email", "phone", "Gender", "dateOfBirth", "streetAddress", "suburbTown", "State", "Postcode"];
 $registeredSkills = ["Programming", "Microsoft Excel", "Leadership", "Communication", "Organisation", "Problem Solving", "Teamwork", "Time Management"];
+
 foreach ($required as $field) { 
     if (!isset($_POST[$field])) {
         header("Location: apply.php");
@@ -18,7 +19,7 @@ if ($_SERVER["REQUEST_METHOD"] !== "POST") {
 function sanityCheck($data) {
     $data = trim($data);
     $data = stripslashes($data);
-    $data = htmlspecialchars($data, ENT_QUOTES, 'UTF-8');
+    $data = htmlspecialchars($data); 
     return $data;
 }
 
@@ -34,8 +35,8 @@ $suburbTown = sanityCheck($_POST["suburbTown"]);
 $State = sanityCheck($_POST["State"]);
 $Postcode = sanityCheck($_POST["Postcode"]);
 
-$otherSkills = isset($_POST["otherSkills"]) ? sanityCheck($_POST["otherSkills"]) : ""; // ? is an "if" statement shortened, if else then return an empty string.
-$selectedSkills = isset($_POST["skills"]) && is_array($_POST["skills"]) ? $_POST["skills"] : []; // If the skills array is not set, return an empty array.
+$otherSkills = isset($_POST["otherSkills"]) ? sanityCheck($_POST["otherSkills"]) : ""; 
+$selectedSkills = isset($_POST["skills"]) && is_array($_POST["skills"]) ? $_POST["skills"] : []; //
 
 $cleanedSkills = [];
 foreach ($selectedSkills as $skill) {
@@ -44,7 +45,6 @@ foreach ($selectedSkills as $skill) {
         $cleanedSkills[] = $skill;
     }
 }
-$Skills = implode(", ", $cleanedSkills); // turns the array of skills into a comma-separated string.
 
 // The following code is assisted by AI.
 $errors = [];
@@ -72,10 +72,9 @@ if (!preg_match("/^(\d{2})\/(\d{2})\/(\d{4})$/", $dateOfBirth, $m)) {
     $errors[] = "Date of birth is not a valid date.";
 } else {
     $dobDate = DateTime::createFromFormat("d/m/Y", $dateOfBirth);
-    $dobSql = $dobDate->format("Y-m-d"); // MySQL DATE format
+    $dobSql = $dobDate->format("Y-m-d");
 }
 
-// Gender: must be one of the three form values
 if (!in_array($Gender, ["Male", "Female", "Other"], true)) {
     $errors[] = "Please select a valid gender.";
 }
@@ -87,7 +86,6 @@ if (!preg_match("/^[A-Za-z0-9\s]{1,40}$/", $suburbTown)) {
     $errors[] = "Suburb/town must be 1-40 letters, numbers or spaces.";
 }
 
-// State must be valid, and the postcode must be 4 digits that fit that state
 $validStates = ["VIC", "NSW", "QLD", "NT", "WA", "SA", "TAS", "ACT"];
 if (!in_array($State, $validStates, true)) {
     $errors[] = "Please select a valid state.";
@@ -97,19 +95,16 @@ if (!preg_match("/^\d{4}$/", $Postcode)) {
     $errors[] = "Postcode must be exactly 4 digits.";
 }
 
-// Email: must pass PHP's check AND have a domain ending (blocks "rahul@raghavan")
 $emailRaw = trim($_POST["email"]);
 if (!filter_var($emailRaw, FILTER_VALIDATE_EMAIL) ||
     !preg_match("/^[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}$/", $emailRaw)) {
     $errors[] = "Please enter a valid email address with a domain, e.g. name@example.com.";
 }
 
-// Phone: 8-12 digits
 if (!preg_match("/^[0-9]{8,12}$/", $phone)) {
     $errors[] = "Phone number must be 8-12 digits.";
 }
 
-// Skills: at least one valid skill (the server-side version of "required")
 if (count($cleanedSkills) === 0) {
     $errors[] = "Please select at least one skill.";
 }
@@ -117,14 +112,14 @@ if (count($cleanedSkills) === 0) {
 
 $dbConnection = mysqli_connect($host, $user, $pwd, $sql_db);
 
-if (empty($errors) && $dbConnection) {
-    $stmt = mysqli_prepare($dbConnection, "SELECT 1 FROM jobs WHERE job_reference = ?"); // sends a query. ? is substitued below
+if (empty($errors) && $dbConnection) { // Done with AI assistance
+    $stmt = mysqli_prepare($dbConnection, "SELECT 1 FROM jobs WHERE job_reference = ?"); 
 
-    mysqli_stmt_bind_param($stmt, "s", $jobReferenceNumber); // defines jobReferenceNumber as a String, and then puts it into ?.
+    mysqli_stmt_bind_param($stmt, "s", $jobReferenceNumber); 
 
-    mysqli_stmt_execute($stmt); // Executes the query
+    mysqli_stmt_execute($stmt); 
 
-    mysqli_stmt_store_result($stmt); // This stores the result of the query in the statement object, allowing us to check the number of rows returned.
+    mysqli_stmt_store_result($stmt); // 
 
     if (mysqli_stmt_num_rows($stmt) === 0) {
         $errors[] = "That job reference number does not exist.";
@@ -132,7 +127,7 @@ if (empty($errors) && $dbConnection) {
     mysqli_stmt_close($stmt);
 }
 
-if (!empty($errors)) {
+if (!empty($errors)) { // Done with AI assistance
     if ($dbConnection) {
         mysqli_close($dbConnection);
     }
@@ -154,8 +149,8 @@ if (!empty($errors)) {
     exit;
 }
 
-
-mysqli_query($dbConnection, "CREATE TABLE IF NOT EXISTS eoi (
+// Done with AI assistance
+mysqli_query($dbConnection, "CREATE TABLE IF NOT EXISTS eoi ( 
   EOInumber INT UNSIGNED NOT NULL AUTO_INCREMENT,
   job_reference CHAR(6) NOT NULL,
   first_name VARCHAR(20) NOT NULL,
@@ -179,7 +174,7 @@ mysqli_query($dbConnection, "CREATE TABLE IF NOT EXISTS eoi (
   CONSTRAINT fk_eoi_job FOREIGN KEY (job_reference)
     REFERENCES jobs (job_reference) ON DELETE RESTRICT
 ) ENGINE=InnoDB");
-
+// Done with AI assistance
 mysqli_query($dbConnection, "CREATE TABLE IF NOT EXISTS eoi_skills (
   EOInumber INT UNSIGNED NOT NULL,
   skill ENUM('Programming','Microsoft Excel','Leadership','Communication',
@@ -188,7 +183,7 @@ mysqli_query($dbConnection, "CREATE TABLE IF NOT EXISTS eoi_skills (
   CONSTRAINT fk_eoi_skills_eoi FOREIGN KEY (EOInumber)
     REFERENCES eoi (EOInumber) ON DELETE CASCADE
 ) ENGINE=InnoDB");
-
+// Done with AI assistance
 $stmt = mysqli_prepare($dbConnection,
     "INSERT INTO eoi (job_reference, first_name, last_name, date_of_birth, gender,
         street_address, suburb_town, state, postcode, email, phone, other_skills)
@@ -200,7 +195,7 @@ $success = mysqli_stmt_execute($stmt);
 $eoiNumber = mysqli_insert_id($dbConnection); // the auto-generated EOInumber
 mysqli_stmt_close($stmt);
 
-// Save each ticked skill as its own row in eoi_skills.
+// Done with AI assistance
 if ($success) {
     foreach ($cleanedSkills as $skill) {
         $skillStmt = mysqli_prepare($dbConnection, "INSERT INTO eoi_skills (EOInumber, skill) VALUES (?, ?)");
