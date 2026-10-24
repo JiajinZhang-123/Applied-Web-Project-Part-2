@@ -4,17 +4,17 @@ require_once __DIR__ . '/settings.php';
 $required = ["jobReferenceNumber", "firstName", "lastName", "email", "phone", "Gender", "dateOfBirth", "streetAddress", "suburbTown", "State", "Postcode"];
 $registeredSkills = ["Programming", "Microsoft Excel", "Leadership", "Communication", "Organisation", "Problem Solving", "Teamwork", "Time Management"];
 
-foreach ($required as $field) { 
-    if (!isset($_POST[$field])) {
-        header("Location: apply.php");
-        exit;
-    }
-}
-
-if ($_SERVER["REQUEST_METHOD"] !== "POST") {
+if ($_SERVER["REQUEST_METHOD"] !== "POST" || empty($_POST)) { // Done with AI assistance
     header("Location: apply.php");
     exit;
 }
+
+foreach ($required as $field) { // Done with AI assistance
+    if (!isset($_POST[$field])) {
+        $_POST[$field] = "";
+    }
+}
+
 
 function sanityCheck($data) {
     $data = trim($data);
@@ -139,8 +139,8 @@ if (!preg_match("/^[0-9]{8,12}$/", $phone)) {
     $errors[] = "Phone number must be 8-12 digits.";
 }
 
-if (count($cleanedSkills) === 0) {
-    $errors[] = "Please select at least one skill.";
+if (count($cleanedSkills) !== count($registeredSkills)) {
+    $errors[] = "Please check all the skills.";
 }
 
 
