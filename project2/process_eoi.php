@@ -16,10 +16,10 @@ foreach ($required as $field) { // Done with AI assistance
 }
 
 
+// Normalize input before validation; escape text when displaying HTML.
 function sanityCheck($data) {
     $data = trim($data);
     $data = stripslashes($data);
-    $data = htmlspecialchars($data); 
     return $data;
 }
 
@@ -139,8 +139,8 @@ if (!preg_match("/^[0-9]{8,12}$/", $phone)) {
     $errors[] = "Phone number must be 8-12 digits.";
 }
 
-if (count($cleanedSkills) !== count($registeredSkills)) {
-    $errors[] = "Please check all the skills.";
+if (count($cleanedSkills) === 0) {
+    $errors[] = "Please select at least one skill.";
 }
 
 
@@ -174,7 +174,7 @@ if (!empty($errors)) { // Done with AI assistance
     <section class="eoi-result">
         <h1>Application could not be submitted</h1>
         <ul>
-            <?php foreach ($errors as $error) { echo "<li>" . $error . "</li>"; } ?>
+            <?php foreach ($errors as $error) { echo "<li>" . htmlspecialchars($error, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . "</li>"; } ?>
         </ul>
         <p><a href="apply.php">Go back to the form</a></p>
     </section>
@@ -261,7 +261,7 @@ include __DIR__ . '/nav.inc';
 ?>
 <section class="eoi-result">
     <?php if ($success) { ?>
-        <h1>Thank you, <?php echo $firstName; ?>!</h1>
+        <h1>Thank you, <?php echo htmlspecialchars($firstName, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?>!</h1>
         <p>Your application has been received.</p>
         <p><strong>Your EOI number is: <?php echo $eoiNumber; ?></strong></p>
     <?php } else { ?>
